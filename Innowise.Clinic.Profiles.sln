@@ -2,6 +2,12 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Innowise.Clinic.Profiles.API", "Innowise.Clinic.Profiles.API\Innowise.Clinic.Profiles.API.csproj", "{06F1C3A5-FC59-4CB9-818A-7DEF6DDDD7CF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Innowise.Clinic.Profiles.Persistence", "Innowise.Clinic.Profiles.Persistence\Innowise.Clinic.Profiles.Persistence.csproj", "{4CD34B10-DB2C-4B02-9C9E-D2921B247947}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Innowise.Clinic.Profiles.Dto", "Innowise.Clinic.Profiles.Dto\Innowise.Clinic.Profiles.Dto.csproj", "{5B9365F8-A9E2-4C34-8F4D-91A8F58DE73A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Innowise.Clinic.Profiles.Services", "Innowise.Clinic.Profiles.Services\Innowise.Clinic.Profiles.Services.csproj", "{0D0AF7DB-3A57-4BB6-B052-A5F2C4471615}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -12,5 +18,17 @@ Global
 		{06F1C3A5-FC59-4CB9-818A-7DEF6DDDD7CF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{06F1C3A5-FC59-4CB9-818A-7DEF6DDDD7CF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{06F1C3A5-FC59-4CB9-818A-7DEF6DDDD7CF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4CD34B10-DB2C-4B02-9C9E-D2921B247947}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4CD34B10-DB2C-4B02-9C9E-D2921B247947}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4CD34B10-DB2C-4B02-9C9E-D2921B247947}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4CD34B10-DB2C-4B02-9C9E-D2921B247947}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5B9365F8-A9E2-4C34-8F4D-91A8F58DE73A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5B9365F8-A9E2-4C34-8F4D-91A8F58DE73A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5B9365F8-A9E2-4C34-8F4D-91A8F58DE73A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5B9365F8-A9E2-4C34-8F4D-91A8F58DE73A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0D0AF7DB-3A57-4BB6-B052-A5F2C4471615}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0D0AF7DB-3A57-4BB6-B052-A5F2C4471615}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0D0AF7DB-3A57-4BB6-B052-A5F2C4471615}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0D0AF7DB-3A57-4BB6-B052-A5F2C4471615}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
