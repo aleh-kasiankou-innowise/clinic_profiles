@@ -8,6 +8,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Innowise.Clinic.Profiles.Dt
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Innowise.Clinic.Profiles.Services", "Innowise.Clinic.Profiles.Services\Innowise.Clinic.Profiles.Services.csproj", "{0D0AF7DB-3A57-4BB6-B052-A5F2C4471615}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Innowise.Clinic.Profiles.Exceptions", "Innowise.Clinic.Profiles.Exceptions\Innowise.Clinic.Profiles.Exceptions.csproj", "{5A4C7245-E1EE-4BF7-99BF-9E989ECA5C9A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Innowise.Clinic.Profiles.RequestPipeline", "Innowise.Clinic.Profiles.RequestPipeline\Innowise.Clinic.Profiles.RequestPipeline.csproj", "{D086E2B7-CFF9-4A42-8FD5-C8568480D593}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Innowise.Clinic.Profiles.AppConfiguration", "Innowise.Clinic.Profiles.AppConfiguration\Innowise.Clinic.Profiles.AppConfiguration.csproj", "{935A2194-07BF-45DC-8FCC-2701A9F05F65}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -30,5 +36,17 @@ Global
 		{0D0AF7DB-3A57-4BB6-B052-A5F2C4471615}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0D0AF7DB-3A57-4BB6-B052-A5F2C4471615}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0D0AF7DB-3A57-4BB6-B052-A5F2C4471615}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5A4C7245-E1EE-4BF7-99BF-9E989ECA5C9A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5A4C7245-E1EE-4BF7-99BF-9E989ECA5C9A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5A4C7245-E1EE-4BF7-99BF-9E989ECA5C9A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5A4C7245-E1EE-4BF7-99BF-9E989ECA5C9A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D086E2B7-CFF9-4A42-8FD5-C8568480D593}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D086E2B7-CFF9-4A42-8FD5-C8568480D593}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D086E2B7-CFF9-4A42-8FD5-C8568480D593}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D086E2B7-CFF9-4A42-8FD5-C8568480D593}.Release|Any CPU.Build.0 = Release|Any CPU
+		{935A2194-07BF-45DC-8FCC-2701A9F05F65}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{935A2194-07BF-45DC-8FCC-2701A9F05F65}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{935A2194-07BF-45DC-8FCC-2701A9F05F65}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{935A2194-07BF-45DC-8FCC-2701A9F05F65}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

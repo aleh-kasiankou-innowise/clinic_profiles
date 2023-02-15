@@ -1,5 +1,5 @@
 using Innowise.Clinic.Profiles.Dto.Profile.Receptionist;
-using Innowise.Clinic.Profiles.Services.Interfaces;
+using Innowise.Clinic.Profiles.Services.ReceptionistService.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

@@ -1,16 +1,13 @@
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace Innowise.Clinic.Profiles.Dto.Profile.Patient;
 
-public class CreatePatientProfileReceptionistDto
-{
-    // TODO Recheck
-    public byte[]? Photo { get; set; }
+[JsonPolymorphic]
+[JsonDerivedType(typeof(PatientProfileWithNumberAndPhotoDto), "withNumberAndPhoto")]
+public record PatientProfileDto(DateTime DateOfBirth, [Required] string FirstName, [Required] string LastName,
+    string? MiddleName);
 
-    [Required] public string FirstName { get; set; }
-
-    [Required] public string LastName { get; set; }
-
-    public string? MiddleName { get; set; }
-    public DateTime DateOfBirth { get; set; }
-}
+public record PatientProfileWithNumberAndPhotoDto(DateTime DateOfBirth, string FirstName, string LastName,
+    string? MiddleName, string? PhoneNumber, byte[]? Photo) : PatientProfileDto(DateOfBirth, FirstName, LastName,
+    MiddleName);

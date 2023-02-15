@@ -1,5 +1,5 @@
 using Innowise.Clinic.Profiles.Dto.Listing;
-using Innowise.Clinic.Profiles.Services.Interfaces;
+using Innowise.Clinic.Profiles.Services.PatientService.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Innowise.Clinic.Profiles.API.Controllers;

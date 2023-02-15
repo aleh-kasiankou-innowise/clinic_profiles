@@ -1,6 +1,6 @@
 using Innowise.Clinic.Profiles.Dto.Listing;
-using Innowise.Clinic.Profiles.Services.Interfaces;
-using Microsoft.AspNetCore.Authorization;
+using Innowise.Clinic.Profiles.Services.Constants;
+using Innowise.Clinic.Profiles.Services.DoctorService.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Innowise.Clinic.Profiles.API.Controllers;
@@ -19,27 +19,18 @@ public class DoctorsController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<IEnumerable<DoctorInfoDto>>> GetDoctorsListing()
     {
+        // TODO ADD FILTERS
+        // TODO ADD PAGINATION
+
         // Possible Filters:
         // Specialization : GUID
         // Office: Guid
 
         // + search by name
-        // call doctors service?
 
-        // Add pagination
+        if (User.IsInRole(UserRoles.Receptionist)) return Ok(await _doctorService.GetListingForReceptionistAsync());
+
         return Ok(await _doctorService.GetListingAsync());
-    }
-
-    [Authorize(Roles = "Receptionist")]
-    [HttpGet("reception-grid")]
-    public async Task<ActionResult<IEnumerable<DoctorInfoReceptionistDto>>> GetDoctorsListingReceptionist()
-    {
-        // Possible Filters:
-        // Specialization : GUID
-        // Office: Guid
-
-        // + search by name
-        return Ok(await _doctorService.GetListingForReceptionistAsync());
     }
 
     [HttpGet("{id:guid}")]

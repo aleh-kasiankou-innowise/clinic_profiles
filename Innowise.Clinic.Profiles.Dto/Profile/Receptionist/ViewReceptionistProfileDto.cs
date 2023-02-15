@@ -4,8 +4,9 @@ namespace Innowise.Clinic.Profiles.Dto.Profile.Receptionist;
 
 public class ViewReceptionistProfileDto
 {
-    public Guid ReceptionistId { get; set; }
     public byte[]? Photo { get; set; }
+
+    public Guid ReceptionistId { get; set; }
 
     [Required] public string FirstName { get; set; }
 

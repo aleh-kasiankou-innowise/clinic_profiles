@@ -4,8 +4,9 @@ namespace Innowise.Clinic.Profiles.Dto.Profile.Doctor;
 
 public class ViewDoctorProfileDto
 {
-    public Guid DoctorId { get; set; }
     public byte[]? Photo { get; set; }
+
+    public Guid DoctorId { get; set; }
 
     [Required] public string FirstName { get; set; }
 

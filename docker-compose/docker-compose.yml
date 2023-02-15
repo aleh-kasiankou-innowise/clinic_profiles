@@ -1,0 +1,42 @@
+version: '3.9'
+
+services:
+
+  profile:
+    container_name: profile-single
+    hostname: profile
+    depends_on: [ profile-db, ]
+    
+    build:
+      context: ../
+      dockerfile: ./Innowise.Clinic.Profiles.API/Dockerfile
+    
+    ports:
+      - "26000:80"
+      - "26005:443"
+    restart: unless-stopped
+    networks:
+      - clinic
+
+  profile-db:
+    container_name: profile-db-single
+    hostname: profile-db
+    image: "mcr.microsoft.com/mssql/server:2022-latest"
+    ports:
+      - "26004:1433"
+
+    environment:
+      SA_PASSWORD: "secureMssqlServerPassw0rd"
+      ACCEPT_EULA: "Y"
+
+    restart: unless-stopped
+    networks:
+      - clinic
+
+volumes:
+  -composeVolume:
+
+networks:
+  clinic:
+    driver: bridge
+    

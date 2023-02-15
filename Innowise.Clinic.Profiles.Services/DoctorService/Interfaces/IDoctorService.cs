@@ -1,7 +1,7 @@
 using Innowise.Clinic.Profiles.Dto.Listing;
 using Innowise.Clinic.Profiles.Dto.Profile.Doctor;
 
-namespace Innowise.Clinic.Profiles.Services.Interfaces;
+namespace Innowise.Clinic.Profiles.Services.DoctorService.Interfaces;
 
 public interface IDoctorService
 {
