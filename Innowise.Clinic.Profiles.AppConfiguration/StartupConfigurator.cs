@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using Innowise.Clinic.Profiles.AppConfiguration.Swagger.Examples;
 using Innowise.Clinic.Profiles.Persistence;
 using Innowise.Clinic.Profiles.Services.DoctorService.Implementations;
 using Innowise.Clinic.Profiles.Services.DoctorService.Interfaces;
@@ -15,6 +16,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Swashbuckle.AspNetCore.Filters;
 
 namespace Innowise.Clinic.Profiles.AppConfiguration;
 
@@ -42,8 +44,11 @@ public static class StartupConfigurator
                     new string[] { }
                 }
             });
+            opts.ExampleFilters();
         });
+        
 
+        services.AddSwaggerExamplesFromAssemblyOf<CreatePatientProfileExamples>();
         services.Configure<RouteOptions>(options => { options.LowercaseUrls = true; });
         return services;
     }
