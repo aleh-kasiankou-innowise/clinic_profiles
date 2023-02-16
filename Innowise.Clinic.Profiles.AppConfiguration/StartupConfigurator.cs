@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using Innowise.Clinic.Profiles.Persistence;
 using Innowise.Clinic.Profiles.Services.DoctorService.Implementations;
 using Innowise.Clinic.Profiles.Services.DoctorService.Interfaces;
 using Innowise.Clinic.Profiles.Services.PatientService.Implementations;
@@ -10,6 +11,7 @@ using Innowise.Clinic.Profiles.Services.ReceptionistService.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -70,14 +72,22 @@ public static class StartupConfigurator
                 ValidateIssuer = false,
                 ValidateAudience = false,
                 ValidateIssuerSigningKey = false,
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Environment.GetEnvironmentVariable("JWT__KEY") ?? throw new
-                    InvalidOperationException()))
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(
+                    Environment.GetEnvironmentVariable("JWT__KEY") ?? throw new
+                        InvalidOperationException()))
             };
         });
         return services;
     }
 
-    public static void PrepareDb(this WebApplication app)
+    public static async Task PrepareDb(this WebApplication app)
     {
+        using (var scope = app.Services.CreateScope())
+        {
+            var services = scope.ServiceProvider;
+
+            var context = services.GetRequiredService<ProfilesDbContext>();
+            if ((await context.Database.GetPendingMigrationsAsync()).Any()) await context.Database.MigrateAsync();
+        }
     }
 }

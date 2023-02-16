@@ -18,7 +18,7 @@ var app = builder.Build();
 app.UseSwagger();
 app.UseSwaggerUI();
 
-app.PrepareDb();
+await app.PrepareDb();
 
 app.UseHttpsRedirection();
 
