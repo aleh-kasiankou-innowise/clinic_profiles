@@ -29,7 +29,6 @@ public class PatientProfilesController : ControllerBase
     }
 
 
-    // TODO ADD SWAGGER SAMPLE REQUESTS FOR EACH TYPE 
     [HttpPost]
     [Authorize(Roles = "Receptionist,Patient")]
     [SwaggerRequestExample(typeof(PatientProfileDto), typeof(CreatePatientProfileExamples))]
@@ -44,11 +43,12 @@ public class PatientProfilesController : ControllerBase
 
         if (newPatient is PatientProfileWithNumberAndPhotoDto newPatientProfile)
         {
-            var userId = User.Claims.First(x => x.Type == JwtClaimTypes.UserIdClaim).Value;
-            return Ok((await _patientService.CreateProfileAsync(newPatientProfile, Guid.Parse(userId)))
-                .ToString());
+            var userId = Guid.Parse(User.Claims.First(x => x.Type == JwtClaimTypes.UserIdClaim).Value);
+            var createProfileTask = _patientService.CreateProfileAsync(newPatientProfile, userId);
+            return Ok((await createProfileTask).ToString());
         }
-        
+
+        // TODO ADD CUSTOM EXCEPTION
         throw new InvalidOperationException("The user has sent the base class");
     }
 

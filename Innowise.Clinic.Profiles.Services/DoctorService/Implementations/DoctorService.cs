@@ -22,6 +22,14 @@ public class DoctorService : IDoctorService
 
     public async Task<Guid> CreateProfileAsync(CreateEditDoctorProfileDto newProfile)
     {
+        var httpClient = new HttpClient();
+        // ensure office, specialization and status are valid
+        var officeCheck = await httpClient.GetAsync($"http://office:80/helperservices/ensure-exists/office/{newProfile.OfficeId}");
+        if (!officeCheck.IsSuccessStatusCode) throw new NotImplementedException();
+        var specializationCheck =
+            await httpClient.GetAsync($"http://service:80/helperservices/ensure-exists/specialization/{newProfile.SpecializationId}");
+        if (!specializationCheck.IsSuccessStatusCode) throw new NotImplementedException();
+
         var newPerson = new Person
         {
             FirstName = newProfile.FirstName,

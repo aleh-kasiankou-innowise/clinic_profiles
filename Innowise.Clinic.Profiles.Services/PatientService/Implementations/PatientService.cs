@@ -1,3 +1,5 @@
+using System.Net.Http.Json;
+using Innowise.Clinic.Profiles.Dto;
 using Innowise.Clinic.Profiles.Dto.Listing;
 using Innowise.Clinic.Profiles.Dto.Profile.Patient;
 using Innowise.Clinic.Profiles.Exceptions;
@@ -16,6 +18,7 @@ public class PatientService : IPatientService
     {
         _dbContext = dbContext;
     }
+
 
     public async Task<Guid> CreateProfileAsync(PatientProfileDto newProfile)
     {
@@ -59,7 +62,11 @@ public class PatientService : IPatientService
         await _dbContext.Patients.AddAsync(newPatientProfile);
         await _dbContext.SaveChangesAsync();
 
-        return newPatientProfile.PatientId;
+        await new HttpClient().PostAsJsonAsync("http://auth:80/helperservices/force-log-out", associatedUserId);
+        await new HttpClient().PostAsJsonAsync("http://auth:80/helperservices/link-to-profile",
+            new UserProfileLinkingDto(associatedUserId, newPatientProfile.Person.PersonId));
+
+        return newPatientProfile.Person.PersonId;
     }
 
     public async Task<ViewPatientProfileDto> GetPatientProfileAsync(Guid patientId)
