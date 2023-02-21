@@ -25,11 +25,11 @@ public class DoctorService : IDoctorService
         var httpClient = new HttpClient();
         // ensure office, specialization and status are valid
         var officeConsistencyCheck = await httpClient.GetAsync($"http://office:80/helperservices/ensure-exists/office/{newProfile.OfficeId}");
-        if (!officeConsistencyCheck.IsSuccessStatusCode) throw new NotImplementedException();
+        if (!officeConsistencyCheck.IsSuccessStatusCode) throw new InconsistentDataException("The office id is invalid.");
         
         var specializationConsistencyCheck =
             await httpClient.GetAsync($"http://service:80/helperservices/ensure-exists/specialization/{newProfile.SpecializationId}");
-        if (!specializationConsistencyCheck.IsSuccessStatusCode) throw new NotImplementedException();
+        if (!specializationConsistencyCheck.IsSuccessStatusCode) throw new InconsistentDataException("The specialization is invalid.");
 
         var newPerson = new Person
         {
