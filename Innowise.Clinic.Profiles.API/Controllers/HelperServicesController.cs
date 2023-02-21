@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 namespace Innowise.Clinic.Profiles.API.Controllers;
 
 [ApiController]
-[Route("{controller}")]
+[Route("[controller]")]
 public class HelperServicesController : ControllerBase
 {
     private readonly IProfileLinkingService _profileLinkingService;
