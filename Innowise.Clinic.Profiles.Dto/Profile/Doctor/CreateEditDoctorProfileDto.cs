@@ -2,21 +2,9 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Innowise.Clinic.Profiles.Dto.Profile.Doctor;
 
-public class CreateEditDoctorProfileDto
-{
-    public byte[]? Photo { get; set; }
+public record DoctorProfileStatusDto(Guid StatusId);
 
-    [Required] public string FirstName { get; set; }
-
-    [Required] public string LastName { get; set; }
-
-    public string? MiddleName { get; set; }
-    public DateTime DateOfBirth { get; set; }
-
-    [Required] [EmailAddress] public string Email { get; set; }
-
-    public Guid SpecializationId { get; set; }
-    public Guid OfficeId { get; set; }
-    public DateTime CareerStartYear { get; set; }
-    public Guid StatusId { get; set; }
-}
+public record DoctorProfileDto(byte[]? Photo, [Required] string FirstName, [Required] string LastName,
+    string MiddleName, DateTime DateOfBirth,
+    [Required] [EmailAddress] string Email, Guid SpecializationId, Guid OfficeId, DateTime CareerStartYear,
+    Guid StatusId) : DoctorProfileStatusDto(StatusId);

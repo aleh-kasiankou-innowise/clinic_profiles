@@ -23,7 +23,7 @@ public class DoctorService : IDoctorService
         _rabbitMqPublisher = rabbitMqPublisher;
     }
 
-    public async Task<Guid> CreateProfileAsync(CreateEditDoctorProfileDto newProfile)
+    public async Task<Guid> CreateProfileAsync(DoctorProfileDto newProfile)
     {
         var httpClient = new HttpClient();
         // ensure office, specialization and status are valid
@@ -118,7 +118,7 @@ public class DoctorService : IDoctorService
         return await doctorInfoReceptionistDtos.ToListAsync();
     }
 
-    public async Task UpdateProfileAsync(Guid doctorId, CreateEditDoctorProfileDto updatedProfile)
+    public async Task UpdateProfileAsync(Guid doctorId, DoctorProfileDto updatedProfile)
     {
         //TODO CHECK STATUS CHANGE OR DELEGATE TO UpdateStatusAsync
         var doctor = await FindDoctorById(doctorId);
@@ -138,7 +138,6 @@ public class DoctorService : IDoctorService
 
     public async Task UpdateStatusAsync(Guid doctorId, Guid newStatusId)
     {
-        // TODO MAKE AVAILABLE AT SWAGGER
         var doctor = await FindDoctorById(doctorId);
         await UpdateStatusAsyncWithoutSaving(doctor, newStatusId);
         _dbContext.Update(doctor);

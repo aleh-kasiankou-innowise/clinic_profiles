@@ -28,24 +28,29 @@ public class DoctorProfilesController : ControllerBase
 
     [Authorize(Roles = "Receptionist")]
     [HttpPost]
-    public async Task<ActionResult<Guid>> CreateProfile([FromBody] CreateEditDoctorProfileDto newDoctor)
+    public async Task<ActionResult<Guid>> CreateProfile([FromBody] DoctorProfileDto newDoctor)
     {
         return Ok((await _doctorService.CreateProfileAsync(newDoctor)).ToString());
     }
 
-// TODO IMPLEMENT POLYMORPHIC DESERIALIZATION
 // TODO ADD REQUEST EXAMPLES
 
     [Authorize(Roles = "Receptionist,Doctor")]
     [HttpPut("{id:guid}")]
     [AllowInteractionWithOwnProfileOnlyFilter("Doctor")]
     public async Task<IActionResult> EditProfile([FromRoute] Guid id,
-        [FromBody] CreateEditDoctorProfileDto updatedDoctor)
+        [FromBody] DoctorProfileStatusDto updatedDoctor)
     {
-        /*await _doctorService.UpdateStatusAsync(id, newStatusId);*/
+        if (updatedDoctor is DoctorProfileDto completeUpdateDto)
+        {
+            await _doctorService.UpdateProfileAsync(id, completeUpdateDto);
+        }
 
+        else
+        {
+            await _doctorService.UpdateStatusAsync(id, updatedDoctor.StatusId);
+        }
 
-        await _doctorService.UpdateProfileAsync(id, updatedDoctor);
         return Ok();
     }
 }
