@@ -120,7 +120,6 @@ public class DoctorService : IDoctorService
 
     public async Task UpdateProfileAsync(Guid doctorId, DoctorProfileDto updatedProfile)
     {
-        //TODO CHECK STATUS CHANGE OR DELEGATE TO UpdateStatusAsync
         var doctor = await FindDoctorById(doctorId);
 
         doctor.Person.FirstName = updatedProfile.FirstName;

@@ -1,5 +1,6 @@
 using Innowise.Clinic.Profiles.AppConfiguration.Swagger.Examples;
 using Innowise.Clinic.Profiles.Dto.Profile.Patient;
+using Innowise.Clinic.Profiles.Exceptions;
 using Innowise.Clinic.Profiles.RequestPipeline;
 using Innowise.Clinic.Profiles.Services.Constants;
 using Innowise.Clinic.Profiles.Services.PatientService.Interfaces;
@@ -48,8 +49,8 @@ public class PatientProfilesController : ControllerBase
             return Ok((await createProfileTask).ToString());
         }
 
-        // TODO ADD CUSTOM EXCEPTION
-        throw new InvalidOperationException("The user has sent the base class");
+        throw new InvalidInputDataException(
+            "The input data is not correctly formatted. Please check the swagger examples to get the list of acceptable data types.");
     }
 
     [Authorize(Roles = "Receptionist, Patient")]
