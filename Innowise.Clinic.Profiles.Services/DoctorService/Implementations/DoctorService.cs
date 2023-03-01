@@ -118,7 +118,7 @@ public class DoctorService : IDoctorService
         return await doctorInfoReceptionistDtos.ToListAsync();
     }
 
-    public async Task UpdateProfileAsync(Guid doctorId, DoctorProfileDto updatedProfile)
+    public async Task UpdateProfileAsync(Guid doctorId, DoctorProfileUpdateDto updatedProfile)
     {
         var doctor = await FindDoctorById(doctorId);
 
@@ -127,7 +127,6 @@ public class DoctorService : IDoctorService
         doctor.Person.MiddleName = updatedProfile.MiddleName;
         doctor.DateOfBirth = updatedProfile.DateOfBirth;
         doctor.Person.Photo = updatedProfile.Photo;
-        doctor.Email = updatedProfile.Email;
         doctor.SpecializationId = updatedProfile.SpecializationId;
         doctor.CareerStartYear = updatedProfile.CareerStartYear;
         await UpdateStatusAsyncWithoutSaving(doctor, updatedProfile.StatusId);
@@ -173,15 +172,18 @@ public class DoctorService : IDoctorService
     private async Task<(bool IsStatusChangeRequired, bool isAccountActive)> CheckAccountStatus(Guid oldStatusId,
         Guid newStatusId)
     {
-        var statuses = await _dbContext.Statuses
-            .Where(x => x.StatusId == newStatusId || x.StatusId == oldStatusId)
-            .ToListAsync();
-
-        var inactiveStatusDbName = "Inactive";
-        if (statuses.Any(x => x.Name == inactiveStatusDbName))
+        if (oldStatusId != newStatusId)
         {
-            var isActivated = statuses.All(x => x.StatusId != newStatusId && x.Name != inactiveStatusDbName);
-            return (true, isActivated);
+            var statuses = await _dbContext.Statuses
+                .Where(x => x.StatusId == newStatusId || x.StatusId == oldStatusId)
+                .ToListAsync();
+
+            var inactiveStatusDbName = "Inactive";
+            if (statuses.Any(x => x.Name == inactiveStatusDbName))
+            {
+                var isActivated = statuses.Single(x => x.StatusId == newStatusId).Name != inactiveStatusDbName;
+                return (true, isActivated);
+            }
         }
 
         return (false, false);

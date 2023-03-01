@@ -11,6 +11,6 @@ public interface IDoctorService
 
     Task<DoctorInfoDto> GetPublicInfo(Guid id);
     Task<IEnumerable<DoctorInfoReceptionistDto>> GetListingForReceptionistAsync();
-    Task UpdateProfileAsync(Guid doctorId, DoctorProfileDto updatedProfile);
+    Task UpdateProfileAsync(Guid doctorId, DoctorProfileUpdateDto updatedProfile);
     Task UpdateStatusAsync(Guid doctorId, Guid newStatusId);
 }

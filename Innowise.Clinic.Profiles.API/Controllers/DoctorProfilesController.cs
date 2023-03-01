@@ -43,7 +43,7 @@ public class DoctorProfilesController : ControllerBase
     public async Task<IActionResult> EditProfile([FromRoute] Guid id,
         [FromBody] DoctorProfileStatusDto updatedDoctor)
     {
-        if (updatedDoctor is DoctorProfileDto completeUpdateDto)
+        if (updatedDoctor is DoctorProfileUpdateDto completeUpdateDto)
         {
             await _doctorService.UpdateProfileAsync(id, completeUpdateDto);
             return Ok();
