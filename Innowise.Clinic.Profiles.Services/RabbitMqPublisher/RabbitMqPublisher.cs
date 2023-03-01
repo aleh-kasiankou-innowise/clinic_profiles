@@ -1,4 +1,5 @@
 using System.Text.Json;
+using Innowise.Clinic.Profiles.Dto;
 using Innowise.Clinic.Profiles.Dto.RabbitMq;
 using Innowise.Clinic.Profiles.Services.RabbitMqPublisher.Options;
 using Microsoft.Extensions.Options;
@@ -41,6 +42,14 @@ public class RabbitMqPublisher
             body: body);
     }
 
+    public void SendAccountGenerationTask(AccountGenerationDto userCreationRequestDto)
+    {
+        var body = JsonSerializer.SerializeToUtf8Bytes(userCreationRequestDto);
+        _channel.BasicPublish(exchange: _rabbitOptions.ProfilesAuthenticationExchangeName,
+            routingKey: _rabbitOptions.AccountGenerationRoutingKey,
+            basicProperties: null,
+            body: body);
+    }
 
     private void DeclareProfileAuthenticationExchange()
     {

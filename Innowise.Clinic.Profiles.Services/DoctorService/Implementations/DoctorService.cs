@@ -1,4 +1,3 @@
-using System.Net.Http.Json;
 using Innowise.Clinic.Profiles.Dto;
 using Innowise.Clinic.Profiles.Dto.Listing;
 using Innowise.Clinic.Profiles.Dto.Profile.Doctor;
@@ -25,20 +24,6 @@ public class DoctorService : IDoctorService
 
     public async Task<Guid> CreateProfileAsync(DoctorProfileDto newProfile)
     {
-        var httpClient = new HttpClient();
-        // ensure office, specialization and status are valid
-        // TODO ADD DATA REDUNDANCY
-        var officeConsistencyCheck =
-            await httpClient.GetAsync($"http://office:80/helperservices/ensure-exists/office/{newProfile.OfficeId}");
-        if (!officeConsistencyCheck.IsSuccessStatusCode)
-            throw new InconsistentDataException("The office id is invalid.");
-
-        var specializationConsistencyCheck =
-            await httpClient.GetAsync(
-                $"http://service:80/helperservices/ensure-exists/specialization/{newProfile.SpecializationId}");
-        if (!specializationConsistencyCheck.IsSuccessStatusCode)
-            throw new InconsistentDataException("The specialization is invalid.");
-
         var newPerson = new Person
         {
             FirstName = newProfile.FirstName,
@@ -61,17 +46,14 @@ public class DoctorService : IDoctorService
         await _dbContext.SaveChangesAsync();
 
         var userCreationRequest =
-            new UserCreationRequestDto(newDoctor.Person.PersonId, UserRoles.Doctor, newDoctor.Email);
-
-        await new HttpClient().PostAsJsonAsync(ServicesRoutes.AccountGenerationEndpoint, userCreationRequest);
-
+            new AccountGenerationDto(newDoctor.Person.PersonId, UserRoles.Doctor, newDoctor.Email);
+        _rabbitMqPublisher.SendAccountGenerationTask(userCreationRequest);
         return newDoctor.Person.PersonId;
     }
 
     public async Task<ViewDoctorProfileDto> GetProfileAsync(Guid doctorId)
     {
         var doctor = await FindDoctorById(doctorId);
-
         var doctorData = new ViewDoctorProfileDto
         {
             DoctorId = doctor.Person.PersonId,
@@ -86,27 +68,39 @@ public class DoctorService : IDoctorService
             SpecializationId = doctor.SpecializationId,
             Photo = doctor.Person.Photo
         };
-
         return doctorData;
     }
 
     public async Task<IEnumerable<DoctorInfoDto>> GetListingAsync()
     {
-        var doctorInfoDtos = _dbContext.Doctors.Include(x => x.Person).Select(d => new DoctorInfoDto(d.DoctorId,
-            d.Person.FirstName,
-            d.Person.LastName, d.Person.MiddleName, d.SpecializationId, d.OfficeId, d.CareerStartYear, d.Person.Photo));
-
+        var doctorInfoDtos = _dbContext.Doctors
+            .Include(x => x.Person)
+            .Select(d => new DoctorInfoDto(
+                d.DoctorId,
+                d.Person.FirstName,
+                d.Person.LastName,
+                d.Person.MiddleName,
+                d.SpecializationId,
+                d.OfficeId,
+                d.CareerStartYear,
+                d.Person.Photo)
+            );
         return await doctorInfoDtos.ToListAsync();
     }
 
     public async Task<DoctorInfoDto> GetPublicInfo(Guid id)
     {
         var doctor = await FindDoctorById(id);
-
-        return new DoctorInfoDto(doctor.DoctorId,
+        return new DoctorInfoDto(
+            doctor.DoctorId,
             doctor.Person.FirstName,
-            doctor.Person.LastName, doctor.Person.MiddleName, doctor.SpecializationId, doctor.OfficeId,
-            doctor.CareerStartYear, doctor.Person.Photo);
+            doctor.Person.LastName,
+            doctor.Person.MiddleName,
+            doctor.SpecializationId,
+            doctor.OfficeId,
+            doctor.CareerStartYear,
+            doctor.Person.Photo
+        );
     }
 
     public async Task<IEnumerable<DoctorInfoReceptionistDto>> GetListingForReceptionistAsync()
@@ -159,13 +153,11 @@ public class DoctorService : IDoctorService
 
     private async Task<Doctor> FindDoctorById(Guid doctorId)
     {
-        var doctor = await _dbContext.Doctors
-            .Include(x => x.Person)
-            .FirstOrDefaultAsync(x => x.Person.PersonId == doctorId);
-
-        if (doctor == null)
-            throw new ProfileNotFoundException("The doctor with the specified id is not registered in the system.");
-
+        var doctor =
+            await _dbContext.Doctors
+                .Include(x => x.Person)
+                .FirstOrDefaultAsync(x => x.Person.PersonId == doctorId)
+            ?? throw new ProfileNotFoundException("The doctor with the specified id is not registered in the system.");
         return doctor;
     }
 

@@ -2,9 +2,10 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Innowise.Clinic.Profiles.Dto;
 
-public class UserCreationRequestDto
+// TODO MOVE TO A SHARED NUGET PACKAGE
+public class AccountGenerationDto
 {
-    public UserCreationRequestDto(Guid entityId, string role, string email)
+    public AccountGenerationDto(Guid entityId, string role, string email)
     {
         EntityId = entityId;
         Role = role;

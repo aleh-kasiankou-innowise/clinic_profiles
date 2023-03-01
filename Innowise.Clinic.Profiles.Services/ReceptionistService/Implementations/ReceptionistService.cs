@@ -44,7 +44,7 @@ public class ReceptionistService : IReceptionistService
         await _dbContext.SaveChangesAsync();
 
         var userCreationRequest =
-            new UserCreationRequestDto(newReceptionist.Person.PersonId, UserRoles.Receptionist, newReceptionist.Email);
+            new AccountGenerationDto(newReceptionist.Person.PersonId, UserRoles.Receptionist, newReceptionist.Email);
 
         await new HttpClient().PostAsJsonAsync(ServicesRoutes.AccountGenerationEndpoint,
             userCreationRequest);

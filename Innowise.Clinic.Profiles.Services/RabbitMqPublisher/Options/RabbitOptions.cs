@@ -2,10 +2,11 @@ namespace Innowise.Clinic.Profiles.Services.RabbitMqPublisher.Options;
 
 public class RabbitOptions
 {
-    public string HostName { get; set; }
-    public string UserName { get; set; }
-    public string Password { get; set; }
-    public string DoctorInactiveRoutingKey { get; set; }
-    public string ReceptionistRemovedRoutingKey { get; set; }
-    public string ProfilesAuthenticationExchangeName { get; set; }
+    public string HostName { get; }
+    public string UserName { get; }
+    public string Password { get; }
+    public string DoctorInactiveRoutingKey { get; }
+    public string ReceptionistRemovedRoutingKey { get; }
+    public string AccountGenerationRoutingKey { get; }
+    public string ProfilesAuthenticationExchangeName { get; }
 }
