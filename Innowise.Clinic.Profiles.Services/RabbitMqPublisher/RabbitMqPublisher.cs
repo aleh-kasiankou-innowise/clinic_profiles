@@ -36,7 +36,7 @@ public class RabbitMqPublisher
     {
         var body = JsonSerializer.SerializeToUtf8Bytes(statusChangeDto);
         _channel.BasicPublish(exchange: _rabbitOptions.ProfilesAuthenticationExchangeName,
-            routingKey: _rabbitOptions.ReceptionistRemovedRoutingKey,
+            routingKey: _rabbitOptions.DoctorInactiveRoutingKey,
             basicProperties: null,
             body: body);
     }
