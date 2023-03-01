@@ -14,6 +14,8 @@ public class ProfilesDbContext : DbContext
     public DbSet<Receptionist> Receptionists { get; set; }
     public DbSet<Person> Persons { get; set; }
     public DbSet<DoctorStatus> Statuses { get; set; }
+    public DbSet<Office> Offices { get; set; }
+    public DbSet<Specialization> Specializations { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -59,30 +61,92 @@ public class ProfilesDbContext : DbContext
         });
 
 
-        modelBuilder.Entity<Doctor>().HasKey(x => x.DoctorId);
-        modelBuilder.Entity<Doctor>().HasOne(x => x.Person)
+        modelBuilder.Entity<Doctor>()
+            .HasKey(x => x.DoctorId);
+        
+        modelBuilder.Entity<Doctor>()
+            .HasOne(x => x.Person)
             .WithMany()
             .HasForeignKey(d => d.PersonId);
-        modelBuilder.Entity<Doctor>().HasOne(x => x.Status)
+        
+        modelBuilder.Entity<Doctor>()
+            .HasOne(x => x.Status)
             .WithMany()
             .HasForeignKey(d => d.StatusId);
-        modelBuilder.Entity<Doctor>().Property(x => x.Email).HasColumnType("nvarchar(128)");
+        
+        modelBuilder.Entity<Doctor>()
+            .HasOne(x => x.Office)
+            .WithMany()
+            .HasForeignKey(d => d.OfficeId);
+        
+        modelBuilder.Entity<Doctor>()
+            .HasOne(x => x.Specialization)
+            .WithMany()
+            .HasForeignKey(d => d.SpecializationId);
+        
+        modelBuilder.Entity<Doctor>()
+            .Property(x => x.Email)
+            .HasColumnType("nvarchar(128)");
 
-        modelBuilder.Entity<Patient>().HasKey(x => x.PatientId);
-        modelBuilder.Entity<Patient>().HasOne(x => x.Person)
+        
+        modelBuilder.Entity<Patient>()
+            .HasKey(x => x.PatientId);
+        
+        modelBuilder.Entity<Patient>()
+            .HasOne(x => x.Person)
             .WithMany()
             .HasForeignKey(d => d.PersonId);
 
-        modelBuilder.Entity<Receptionist>().HasKey(x => x.ReceptionistId);
-        modelBuilder.Entity<Receptionist>().Property(x => x.Email).HasColumnType("nvarchar(128)");
-        modelBuilder.Entity<Receptionist>().HasOne(x => x.Person)
+        
+        modelBuilder.Entity<Receptionist>()
+            .HasKey(x => x.ReceptionistId);
+        modelBuilder.Entity<Receptionist>()
+            .Property(x => x.Email)
+            .HasColumnType("nvarchar(128)");
+        
+        modelBuilder.Entity<Receptionist>()
+            .HasOne(x => x.Person)
             .WithMany()
             .HasForeignKey(d => d.PersonId);
+        
+        modelBuilder.Entity<Receptionist>()
+            .HasOne(x => x.Office)
+            .WithMany()
+            .HasForeignKey(d => d.OfficeId);
 
-        modelBuilder.Entity<Person>().HasKey(x => x.PersonId);
-        modelBuilder.Entity<Person>().HasIndex(x => x.UserId).IsUnique();
-        modelBuilder.Entity<Person>().Property(x => x.FirstName).HasColumnType("nvarchar(128)");
-        modelBuilder.Entity<Person>().Property(x => x.LastName).HasColumnType("nvarchar(128)");
-        modelBuilder.Entity<Person>().Property(x => x.MiddleName).HasColumnType("nvarchar(128)");
+        
+        modelBuilder.Entity<Person>()
+            .HasKey(x => x.PersonId);
+        modelBuilder.Entity<Person>()
+            .HasIndex(x => x.UserId)
+            .IsUnique();
+        
+        modelBuilder.Entity<Person>()
+            .Property(x => x.FirstName)
+            .HasColumnType("nvarchar(128)");
+        
+        modelBuilder.Entity<Person>()
+            .Property(x => x.LastName)
+            .HasColumnType("nvarchar(128)");
+        
+        modelBuilder.Entity<Person>()
+            .Property(x => x.MiddleName)
+            .HasColumnType("nvarchar(128)");
+
+        
+        modelBuilder.Entity<Office>()
+            .HasKey(x => x.OfficeId);
+
+        modelBuilder.Entity<Office>()
+            .Property(x => x.OfficeAddress)
+            .HasColumnType("nvarchar(128)");
+        
+        
+        modelBuilder.Entity<Specialization>()
+            .HasKey(x => x.SpecializationId);
+
+        modelBuilder.Entity<Specialization>()
+            .Property(x => x.SpecializationName)
+            .HasColumnType("nvarchar(128)");
     }
 }

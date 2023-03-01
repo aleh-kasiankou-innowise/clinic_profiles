@@ -12,7 +12,6 @@ public record PatientProfileDto([Required] string FirstName, [Required] string L
 
 public record PatientProfileWithNumberAndPhotoDto : PatientProfileDto
 {
-    // TODO TRY TO IMPROVE
     public PatientProfileWithNumberAndPhotoDto(string FirstName, string LastName,
         string? MiddleName, DateTime DateOfBirth, string? PhoneNumber, byte[]? Photo) : base(FirstName, LastName,
         MiddleName, DateOfBirth)

@@ -49,13 +49,12 @@ public static class StartupConfigurator
             });
             opts.ExampleFilters();
         });
-        
 
         services.AddSwaggerExamplesFromAssemblyOf<CreatePatientProfileExamples>();
         services.Configure<RouteOptions>(options => { options.LowercaseUrls = true; });
         return services;
     }
-    
+
     public static IServiceCollection ConfigureCrossServiceCommunication(this IServiceCollection services,
         IConfiguration configuration)
     {
@@ -101,9 +100,11 @@ public static class StartupConfigurator
         using (var scope = app.Services.CreateScope())
         {
             var services = scope.ServiceProvider;
-
             var context = services.GetRequiredService<ProfilesDbContext>();
-            if ((await context.Database.GetPendingMigrationsAsync()).Any()) await context.Database.MigrateAsync();
+            if ((await context.Database.GetPendingMigrationsAsync()).Any())
+            {
+                await context.Database.MigrateAsync();
+            }
         }
     }
 }
