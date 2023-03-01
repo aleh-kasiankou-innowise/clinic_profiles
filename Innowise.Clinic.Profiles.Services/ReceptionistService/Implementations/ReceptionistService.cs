@@ -14,10 +14,13 @@ namespace Innowise.Clinic.Profiles.Services.ReceptionistService.Implementations;
 public class ReceptionistService : IReceptionistService
 {
     private readonly ProfilesDbContext _dbContext;
+    private readonly RabbitMqPublisher.RabbitMqPublisher _authenticationServiceConnection;
 
-    public ReceptionistService(ProfilesDbContext dbContext)
+    public ReceptionistService(ProfilesDbContext dbContext,
+        RabbitMqPublisher.RabbitMqPublisher authenticationServiceConnection)
     {
         _dbContext = dbContext;
+        _authenticationServiceConnection = authenticationServiceConnection;
     }
 
     public async Task<Guid> CreateProfileAsync(CreateReceptionistProfileDto newProfile)
@@ -95,7 +98,7 @@ public class ReceptionistService : IReceptionistService
     public async Task DeleteProfileAsync(Guid receptionistId)
     {
         var receptionist = await GetReceptionistById(receptionistId);
-
+        _authenticationServiceConnection.RemoveReceptionistAccount(receptionistId);
         _dbContext.Receptionists.Remove(receptionist);
         await _dbContext.SaveChangesAsync();
     }

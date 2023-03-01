@@ -7,12 +7,15 @@ using Innowise.Clinic.Profiles.Services.PatientService.Implementations;
 using Innowise.Clinic.Profiles.Services.PatientService.Interfaces;
 using Innowise.Clinic.Profiles.Services.ProfileLinkingService.Implementations;
 using Innowise.Clinic.Profiles.Services.ProfileLinkingService.Interfaces;
+using Innowise.Clinic.Profiles.Services.RabbitMqPublisher;
+using Innowise.Clinic.Profiles.Services.RabbitMqPublisher.Options;
 using Innowise.Clinic.Profiles.Services.ReceptionistService.Implementations;
 using Innowise.Clinic.Profiles.Services.ReceptionistService.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -50,6 +53,14 @@ public static class StartupConfigurator
 
         services.AddSwaggerExamplesFromAssemblyOf<CreatePatientProfileExamples>();
         services.Configure<RouteOptions>(options => { options.LowercaseUrls = true; });
+        return services;
+    }
+    
+    public static IServiceCollection ConfigureCrossServiceCommunication(this IServiceCollection services,
+        IConfiguration configuration)
+    {
+        services.Configure<RabbitOptions>(configuration.GetSection("RabbitConfigurations"));
+        services.AddSingleton<RabbitMqPublisher>();
         return services;
     }
 

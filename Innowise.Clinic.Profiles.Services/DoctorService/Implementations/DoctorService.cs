@@ -2,6 +2,7 @@ using System.Net.Http.Json;
 using Innowise.Clinic.Profiles.Dto;
 using Innowise.Clinic.Profiles.Dto.Listing;
 using Innowise.Clinic.Profiles.Dto.Profile.Doctor;
+using Innowise.Clinic.Profiles.Dto.RabbitMq;
 using Innowise.Clinic.Profiles.Exceptions;
 using Innowise.Clinic.Profiles.Persistence;
 using Innowise.Clinic.Profiles.Persistence.Models;
@@ -14,22 +15,29 @@ namespace Innowise.Clinic.Profiles.Services.DoctorService.Implementations;
 public class DoctorService : IDoctorService
 {
     private readonly ProfilesDbContext _dbContext;
+    private readonly RabbitMqPublisher.RabbitMqPublisher _rabbitMqPublisher;
 
-    public DoctorService(ProfilesDbContext dbContext)
+    public DoctorService(ProfilesDbContext dbContext, RabbitMqPublisher.RabbitMqPublisher rabbitMqPublisher)
     {
         _dbContext = dbContext;
+        _rabbitMqPublisher = rabbitMqPublisher;
     }
 
     public async Task<Guid> CreateProfileAsync(CreateEditDoctorProfileDto newProfile)
     {
         var httpClient = new HttpClient();
         // ensure office, specialization and status are valid
-        var officeConsistencyCheck = await httpClient.GetAsync($"http://office:80/helperservices/ensure-exists/office/{newProfile.OfficeId}");
-        if (!officeConsistencyCheck.IsSuccessStatusCode) throw new InconsistentDataException("The office id is invalid.");
-        
+        // TODO ADD DATA REDUNDANCY
+        var officeConsistencyCheck =
+            await httpClient.GetAsync($"http://office:80/helperservices/ensure-exists/office/{newProfile.OfficeId}");
+        if (!officeConsistencyCheck.IsSuccessStatusCode)
+            throw new InconsistentDataException("The office id is invalid.");
+
         var specializationConsistencyCheck =
-            await httpClient.GetAsync($"http://service:80/helperservices/ensure-exists/specialization/{newProfile.SpecializationId}");
-        if (!specializationConsistencyCheck.IsSuccessStatusCode) throw new InconsistentDataException("The specialization is invalid.");
+            await httpClient.GetAsync(
+                $"http://service:80/helperservices/ensure-exists/specialization/{newProfile.SpecializationId}");
+        if (!specializationConsistencyCheck.IsSuccessStatusCode)
+            throw new InconsistentDataException("The specialization is invalid.");
 
         var newPerson = new Person
         {
@@ -112,6 +120,7 @@ public class DoctorService : IDoctorService
 
     public async Task UpdateProfileAsync(Guid doctorId, CreateEditDoctorProfileDto updatedProfile)
     {
+        //TODO CHECK STATUS CHANGE OR DELEGATE TO UpdateStatusAsync
         var doctor = await FindDoctorById(doctorId);
 
         doctor.Person.FirstName = updatedProfile.FirstName;
@@ -120,19 +129,35 @@ public class DoctorService : IDoctorService
         doctor.DateOfBirth = updatedProfile.DateOfBirth;
         doctor.Person.Photo = updatedProfile.Photo;
         doctor.Email = updatedProfile.Email;
-        doctor.StatusId = updatedProfile.StatusId;
         doctor.SpecializationId = updatedProfile.SpecializationId;
         doctor.CareerStartYear = updatedProfile.CareerStartYear;
-
+        await UpdateStatusAsyncWithoutSaving(doctor, updatedProfile.StatusId);
         _dbContext.Update(doctor);
         await _dbContext.SaveChangesAsync();
     }
 
     public async Task UpdateStatusAsync(Guid doctorId, Guid newStatusId)
     {
+        // TODO MAKE AVAILABLE AT SWAGGER
         var doctor = await FindDoctorById(doctorId);
-        _dbContext.Remove(doctor);
+        await UpdateStatusAsyncWithoutSaving(doctor, newStatusId);
+        _dbContext.Update(doctor);
         await _dbContext.SaveChangesAsync();
+    }
+
+    private async Task UpdateStatusAsyncWithoutSaving(Doctor doctor, Guid newStatusId)
+    {
+        var accountStatusCheckResult = await CheckAccountStatus(doctor.StatusId, newStatusId);
+        if (accountStatusCheckResult.IsStatusChangeRequired)
+        {
+            var accountId = doctor.Person.UserId ??
+                            throw new AccountNotLinkedException(
+                                $"Profile {doctor.Person.PersonId} is not linked to the account.");
+            _rabbitMqPublisher.ChangeDoctorAccountStatus(new AccountStatusChangeDto(accountId,
+                accountStatusCheckResult.isAccountActive));
+        }
+
+        doctor.StatusId = newStatusId;
     }
 
     private async Task<Doctor> FindDoctorById(Guid doctorId)
@@ -145,5 +170,21 @@ public class DoctorService : IDoctorService
             throw new ProfileNotFoundException("The doctor with the specified id is not registered in the system.");
 
         return doctor;
+    }
+
+    private async Task<(bool IsStatusChangeRequired, bool isAccountActive)> CheckAccountStatus(Guid oldStatusId,
+        Guid newStatusId)
+    {
+        var statuses = await _dbContext.Statuses
+            .Where(x => x.StatusId == newStatusId || x.StatusId == oldStatusId)
+            .ToListAsync();
+        if (statuses.Any(x => x.Name == "Inactive"))
+        {
+            //TODO MOVE LITERAL TO CONSTANT OR USE ENUM 
+            var isActivated = statuses.All(x => x.StatusId != newStatusId && x.Name != "Inactive");
+            return (true, isActivated);
+        }
+
+        return (false, false);
     }
 }
