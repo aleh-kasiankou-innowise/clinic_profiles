@@ -1,8 +1,11 @@
+using Innowise.Clinic.Profiles.AppConfiguration.Swagger.Examples;
 using Innowise.Clinic.Profiles.Dto.Profile.Doctor;
+using Innowise.Clinic.Profiles.Exceptions;
 using Innowise.Clinic.Profiles.RequestPipeline;
 using Innowise.Clinic.Profiles.Services.DoctorService.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.Filters;
 
 namespace Innowise.Clinic.Profiles.API.Controllers;
 
@@ -18,39 +21,40 @@ public class DoctorProfilesController : ControllerBase
         _doctorService = doctorService;
     }
 
-    [Authorize(Roles = "Receptionist,Doctor")]
     [HttpGet("{id:guid}")]
+    [Authorize(Roles = "Receptionist,Doctor")]
     [AllowInteractionWithOwnProfileOnlyFilter("Doctor")]
     public async Task<ActionResult<ViewDoctorProfileDto>> ViewProfile([FromRoute] Guid id)
     {
         return Ok(await _doctorService.GetProfileAsync(id));
     }
 
-    [Authorize(Roles = "Receptionist")]
     [HttpPost]
+    [Authorize(Roles = "Receptionist")]
     public async Task<ActionResult<Guid>> CreateProfile([FromBody] DoctorProfileDto newDoctor)
     {
         return Ok((await _doctorService.CreateProfileAsync(newDoctor)).ToString());
     }
 
-// TODO ADD REQUEST EXAMPLES
-
-    [Authorize(Roles = "Receptionist,Doctor")]
     [HttpPut("{id:guid}")]
+    [Authorize(Roles = "Receptionist,Doctor")]
     [AllowInteractionWithOwnProfileOnlyFilter("Doctor")]
+    [SwaggerRequestExample(typeof(DoctorProfileStatusDto), typeof(UpdateDoctorProfileInfoExamples))]
     public async Task<IActionResult> EditProfile([FromRoute] Guid id,
         [FromBody] DoctorProfileStatusDto updatedDoctor)
     {
         if (updatedDoctor is DoctorProfileDto completeUpdateDto)
         {
             await _doctorService.UpdateProfileAsync(id, completeUpdateDto);
+            return Ok();
         }
 
-        else
+        if (updatedDoctor.GetType() == typeof(DoctorProfileStatusDto))
         {
             await _doctorService.UpdateStatusAsync(id, updatedDoctor.StatusId);
+            return Ok();
         }
 
-        return Ok();
+        throw new InvalidInputDataException();
     }
 }

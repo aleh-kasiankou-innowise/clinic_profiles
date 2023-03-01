@@ -176,10 +176,11 @@ public class DoctorService : IDoctorService
         var statuses = await _dbContext.Statuses
             .Where(x => x.StatusId == newStatusId || x.StatusId == oldStatusId)
             .ToListAsync();
-        if (statuses.Any(x => x.Name == "Inactive"))
+
+        var inactiveStatusDbName = "Inactive";
+        if (statuses.Any(x => x.Name == inactiveStatusDbName))
         {
-            //TODO MOVE LITERAL TO CONSTANT OR USE ENUM 
-            var isActivated = statuses.All(x => x.StatusId != newStatusId && x.Name != "Inactive");
+            var isActivated = statuses.All(x => x.StatusId != newStatusId && x.Name != inactiveStatusDbName);
             return (true, isActivated);
         }
 

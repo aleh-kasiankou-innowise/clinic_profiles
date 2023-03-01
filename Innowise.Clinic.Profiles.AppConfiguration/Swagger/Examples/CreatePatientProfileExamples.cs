@@ -8,7 +8,6 @@ public class CreatePatientProfileExamples : IMultipleExamplesProvider<PatientPro
     public IEnumerable<SwaggerExample<PatientProfileDto>> GetExamples()
     {
         var patientProfileRecordExample = new PatientProfileDto("John", "Doe", "Mariano", new DateTime(1990, 2, 15));
-
         yield return SwaggerExample.Create("Create Profile by Receptionist", patientProfileRecordExample
         );
 
@@ -16,7 +15,6 @@ public class CreatePatientProfileExamples : IMultipleExamplesProvider<PatientPro
             "Mariano",
             new DateTime(1990, 2, 15),
             "8-800-555-35-35", "photo"u8.ToArray());
-
         yield return SwaggerExample.Create("Create Profile by Patient",
             patientProfileWithNumberAndPhotoDto);
     }

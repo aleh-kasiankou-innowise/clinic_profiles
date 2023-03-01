@@ -21,8 +21,8 @@ public class PatientProfilesController : ControllerBase
         _patientService = patientService;
     }
 
-    [Authorize(Roles = "Receptionist,Doctor,Patient")]
     [HttpGet("{id:guid}")]
+    [Authorize(Roles = "Receptionist,Doctor,Patient")]
     [AllowInteractionWithOwnProfileOnlyFilter("Patient")]
     public async Task<ActionResult<ViewPatientProfileDto>> ViewPatientProfile([FromRoute] Guid id)
     {
@@ -37,10 +37,8 @@ public class PatientProfilesController : ControllerBase
         [FromBody] PatientProfileDto newPatient)
     {
         // TODO ADD LOGIC FOR SEARCHING UNLINKED PROFILES FIRST
-
         if (User.IsInRole(UserRoles.Receptionist))
             return Ok((await _patientService.CreateProfileAsync(newPatient)).ToString());
-
 
         if (newPatient is PatientProfileWithNumberAndPhotoDto newPatientProfile)
         {
@@ -49,12 +47,11 @@ public class PatientProfilesController : ControllerBase
             return Ok((await createProfileTask).ToString());
         }
 
-        throw new InvalidInputDataException(
-            "The input data is not correctly formatted. Please check the swagger examples to get the list of acceptable data types.");
+        throw new InvalidInputDataException();
     }
 
-    [Authorize(Roles = "Receptionist, Patient")]
     [HttpPut("{id:guid}")]
+    [Authorize(Roles = "Receptionist, Patient")]
     [AllowInteractionWithOwnProfileOnlyFilter("Patient")]
     public async Task<IActionResult> EditPatientProfile([FromRoute] Guid id,
         [FromBody] PatientProfileWithNumberAndPhotoDto updatedPatient)
@@ -64,8 +61,8 @@ public class PatientProfilesController : ControllerBase
     }
 
 
-    [Authorize(Roles = "Receptionist")]
     [HttpDelete("{id:guid}")]
+    [Authorize(Roles = "Receptionist")]
     public async Task<IActionResult> DeletePatientProfile([FromRoute] Guid id)
     {
         await _patientService.DeleteProfileAsync(id);
