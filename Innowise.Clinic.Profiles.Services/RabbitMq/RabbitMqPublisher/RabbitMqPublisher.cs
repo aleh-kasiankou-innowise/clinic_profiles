@@ -1,11 +1,11 @@
 using System.Text.Json;
 using Innowise.Clinic.Profiles.Dto;
 using Innowise.Clinic.Profiles.Dto.RabbitMq;
-using Innowise.Clinic.Profiles.Services.RabbitMqPublisher.Options;
+using Innowise.Clinic.Profiles.Services.RabbitMq.Options;
 using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
 
-namespace Innowise.Clinic.Profiles.Services.RabbitMqPublisher;
+namespace Innowise.Clinic.Profiles.Services.RabbitMq.RabbitMqPublisher;
 
 public class RabbitMqPublisher : IRabbitMqPublisher
 {

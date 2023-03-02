@@ -1,14 +1,17 @@
 ﻿using System.Text;
 using Innowise.Clinic.Profiles.Configuration.Swagger.Examples;
 using Innowise.Clinic.Profiles.Persistence;
+using Innowise.Clinic.Profiles.Services.ConsistencyManager.Implementations;
+using Innowise.Clinic.Profiles.Services.ConsistencyManager.Interfaces;
 using Innowise.Clinic.Profiles.Services.DoctorService.Implementations;
 using Innowise.Clinic.Profiles.Services.DoctorService.Interfaces;
 using Innowise.Clinic.Profiles.Services.PatientService.Implementations;
 using Innowise.Clinic.Profiles.Services.PatientService.Interfaces;
 using Innowise.Clinic.Profiles.Services.ProfileLinkingService.Implementations;
 using Innowise.Clinic.Profiles.Services.ProfileLinkingService.Interfaces;
-using Innowise.Clinic.Profiles.Services.RabbitMqPublisher;
-using Innowise.Clinic.Profiles.Services.RabbitMqPublisher.Options;
+using Innowise.Clinic.Profiles.Services.RabbitMq.Options;
+using Innowise.Clinic.Profiles.Services.RabbitMq.RabbitMqConsumer;
+using Innowise.Clinic.Profiles.Services.RabbitMq.RabbitMqPublisher;
 using Innowise.Clinic.Profiles.Services.ReceptionistService.Implementations;
 using Innowise.Clinic.Profiles.Services.ReceptionistService.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -59,7 +62,9 @@ public static class ConfigurationExtensions
         IConfiguration configuration)
     {
         services.Configure<RabbitOptions>(configuration.GetSection("RabbitConfigurations"));
+        services.AddScoped<IConsistencyService, ConsistencyService>();
         services.AddSingleton<IRabbitMqPublisher, RabbitMqPublisher>();
+        services.AddHostedService<RabbitMqConsumer>();
         return services;
     }
 

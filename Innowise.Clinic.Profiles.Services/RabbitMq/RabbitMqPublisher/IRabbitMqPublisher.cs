@@ -1,7 +1,7 @@
 using Innowise.Clinic.Profiles.Dto;
 using Innowise.Clinic.Profiles.Dto.RabbitMq;
 
-namespace Innowise.Clinic.Profiles.Services.RabbitMqPublisher;
+namespace Innowise.Clinic.Profiles.Services.RabbitMq.RabbitMqPublisher;
 
 public interface IRabbitMqPublisher
 {
