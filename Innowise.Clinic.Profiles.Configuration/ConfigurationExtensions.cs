@@ -1,5 +1,5 @@
 ﻿using System.Text;
-using Innowise.Clinic.Profiles.AppConfiguration.Swagger.Examples;
+using Innowise.Clinic.Profiles.Configuration.Swagger.Examples;
 using Innowise.Clinic.Profiles.Persistence;
 using Innowise.Clinic.Profiles.Services.DoctorService.Implementations;
 using Innowise.Clinic.Profiles.Services.DoctorService.Interfaces;
@@ -21,9 +21,9 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Filters;
 
-namespace Innowise.Clinic.Profiles.AppConfiguration;
+namespace Innowise.Clinic.Profiles.Configuration;
 
-public static class StartupConfigurator
+public static class ConfigurationExtensions
 {
     public static IServiceCollection ConfigureSwagger(this IServiceCollection services)
     {
@@ -59,7 +59,7 @@ public static class StartupConfigurator
         IConfiguration configuration)
     {
         services.Configure<RabbitOptions>(configuration.GetSection("RabbitConfigurations"));
-        services.AddSingleton<RabbitMqPublisher>();
+        services.AddSingleton<IRabbitMqPublisher, RabbitMqPublisher>();
         return services;
     }
 

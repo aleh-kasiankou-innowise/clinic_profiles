@@ -7,6 +7,7 @@ using Innowise.Clinic.Profiles.Persistence;
 using Innowise.Clinic.Profiles.Persistence.Models;
 using Innowise.Clinic.Profiles.Services.Constants;
 using Innowise.Clinic.Profiles.Services.DoctorService.Interfaces;
+using Innowise.Clinic.Profiles.Services.RabbitMqPublisher;
 using Microsoft.EntityFrameworkCore;
 
 namespace Innowise.Clinic.Profiles.Services.DoctorService.Implementations;
@@ -14,7 +15,7 @@ namespace Innowise.Clinic.Profiles.Services.DoctorService.Implementations;
 public class DoctorService : IDoctorService
 {
     private readonly ProfilesDbContext _dbContext;
-    private readonly RabbitMqPublisher.RabbitMqPublisher _rabbitMqPublisher;
+    private readonly IRabbitMqPublisher _rabbitMqPublisher;
 
     public DoctorService(ProfilesDbContext dbContext, RabbitMqPublisher.RabbitMqPublisher rabbitMqPublisher)
     {

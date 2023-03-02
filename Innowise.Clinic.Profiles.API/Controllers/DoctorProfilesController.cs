@@ -1,4 +1,4 @@
-using Innowise.Clinic.Profiles.AppConfiguration.Swagger.Examples;
+using Innowise.Clinic.Profiles.Configuration.Swagger.Examples;
 using Innowise.Clinic.Profiles.Dto.Profile.Doctor;
 using Innowise.Clinic.Profiles.Exceptions;
 using Innowise.Clinic.Profiles.RequestPipeline;

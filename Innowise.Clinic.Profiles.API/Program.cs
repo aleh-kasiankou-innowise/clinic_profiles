@@ -1,4 +1,4 @@
-using Innowise.Clinic.Profiles.AppConfiguration;
+using Innowise.Clinic.Profiles.Configuration;
 using Innowise.Clinic.Profiles.Persistence;
 using Innowise.Clinic.Profiles.RequestPipeline;
 using Microsoft.EntityFrameworkCore;

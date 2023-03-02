@@ -1,7 +1,7 @@
 using Innowise.Clinic.Profiles.Dto.Profile.Patient;
 using Swashbuckle.AspNetCore.Filters;
 
-namespace Innowise.Clinic.Profiles.AppConfiguration.Swagger.Examples;
+namespace Innowise.Clinic.Profiles.Configuration.Swagger.Examples;
 
 public class CreatePatientProfileExamples : IMultipleExamplesProvider<PatientProfileDto>
 {

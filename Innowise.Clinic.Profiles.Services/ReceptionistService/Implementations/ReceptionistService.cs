@@ -6,6 +6,7 @@ using Innowise.Clinic.Profiles.Exceptions;
 using Innowise.Clinic.Profiles.Persistence;
 using Innowise.Clinic.Profiles.Persistence.Models;
 using Innowise.Clinic.Profiles.Services.Constants;
+using Innowise.Clinic.Profiles.Services.RabbitMqPublisher;
 using Innowise.Clinic.Profiles.Services.ReceptionistService.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,7 +15,7 @@ namespace Innowise.Clinic.Profiles.Services.ReceptionistService.Implementations;
 public class ReceptionistService : IReceptionistService
 {
     private readonly ProfilesDbContext _dbContext;
-    private readonly RabbitMqPublisher.RabbitMqPublisher _authenticationServiceConnection;
+    private readonly IRabbitMqPublisher _authenticationServiceConnection;
 
     public ReceptionistService(ProfilesDbContext dbContext,
         RabbitMqPublisher.RabbitMqPublisher authenticationServiceConnection)

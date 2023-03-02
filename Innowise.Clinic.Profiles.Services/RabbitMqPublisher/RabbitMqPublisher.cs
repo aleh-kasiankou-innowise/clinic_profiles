@@ -7,7 +7,7 @@ using RabbitMQ.Client;
 
 namespace Innowise.Clinic.Profiles.Services.RabbitMqPublisher;
 
-public class RabbitMqPublisher
+public class RabbitMqPublisher : IRabbitMqPublisher
 {
     private readonly IModel _channel;
     private readonly RabbitOptions _rabbitOptions;
