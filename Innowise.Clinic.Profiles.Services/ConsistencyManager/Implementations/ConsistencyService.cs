@@ -1,8 +1,10 @@
-using Innowise.Clinic.Profiles.Dto.RabbitMq;
 using Innowise.Clinic.Profiles.Exceptions.ConsistencyManager;
 using Innowise.Clinic.Profiles.Persistence;
 using Innowise.Clinic.Profiles.Persistence.Models;
 using Innowise.Clinic.Profiles.Services.ConsistencyManager.Interfaces;
+using Innowise.Clinic.Shared.Dto;
+using Innowise.Clinic.Shared.Enums;
+using Innowise.Clinic.Shared.MassTransit.MessageTypes.Events;
 
 namespace Innowise.Clinic.Profiles.Services.ConsistencyManager.Implementations;
 
@@ -15,7 +17,7 @@ public class ConsistencyService : IConsistencyService
         _dbContext = dbContext;
     }
 
-    public void EnsureOfficeConsistency(OfficeChangeTask officeChangeTask)
+    public void EnsureOfficeConsistency(OfficeUpdatedMessage officeChangeTask)
     {
         switch (officeChangeTask.TaskType)
         {
@@ -33,7 +35,7 @@ public class ConsistencyService : IConsistencyService
         }
     }
 
-    public void EnsureSpecializationConsistency(SpecializationChangeTaskDto specializationChangeTask)
+    public void EnsureSpecializationConsistency(SpecializationUpdatedMessage specializationChangeTask)
     {
         switch (specializationChangeTask.TaskType)
         {

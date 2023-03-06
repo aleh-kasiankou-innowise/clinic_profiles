@@ -1,7 +1,7 @@
 using System.Text.Json;
 using Innowise.Clinic.Profiles.Dto;
 using Innowise.Clinic.Profiles.Dto.RabbitMq;
-using Innowise.Clinic.Profiles.Services.RabbitMq.Options;
+using Innowise.Clinic.Profiles.Services.RabbitMq.RabbitMqPublisher.Options;
 using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
 

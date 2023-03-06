@@ -1,4 +1,4 @@
-namespace Innowise.Clinic.Profiles.Services.RabbitMq.Options;
+namespace Innowise.Clinic.Profiles.Services.RabbitMq.RabbitMqPublisher.Options;
 
 public class RabbitOptions
 {
