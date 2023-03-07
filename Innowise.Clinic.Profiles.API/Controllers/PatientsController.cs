@@ -1,5 +1,7 @@
 using Innowise.Clinic.Profiles.Dto.Listing;
 using Innowise.Clinic.Profiles.Services.PatientService.Interfaces;
+using Innowise.Clinic.Shared.Constants;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Innowise.Clinic.Profiles.API.Controllers;
@@ -16,6 +18,7 @@ public class PatientsController : ControllerBase
     }
 
     [HttpGet]
+    [Authorize(Roles = $"{UserRoles.Receptionist},{UserRoles.Doctor}")]
     public async Task<ActionResult<IEnumerable<PatientInfoDto>>> GetPatientListing()
     {
         // Possible search by name

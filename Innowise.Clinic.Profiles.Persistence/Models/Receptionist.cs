@@ -1,8 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Innowise.Clinic.Profiles.Persistence.Interfaces;
 
 namespace Innowise.Clinic.Profiles.Persistence.Models;
 
-public class Receptionist
+public class Receptionist : IPersonRelatable
 {
     public Guid ReceptionistId { get; set; }
     public Guid PersonId { get; set; }

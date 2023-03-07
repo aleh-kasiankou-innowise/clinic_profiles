@@ -1,6 +1,6 @@
 using Innowise.Clinic.Profiles.Dto.Listing;
-using Innowise.Clinic.Profiles.Services.Constants;
 using Innowise.Clinic.Profiles.Services.DoctorService.Interfaces;
+using Innowise.Clinic.Shared.Constants;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Innowise.Clinic.Profiles.API.Controllers;

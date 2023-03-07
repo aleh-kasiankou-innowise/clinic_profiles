@@ -5,9 +5,9 @@ using Innowise.Clinic.Profiles.Dto.RabbitMq;
 using Innowise.Clinic.Profiles.Exceptions;
 using Innowise.Clinic.Profiles.Persistence;
 using Innowise.Clinic.Profiles.Persistence.Models;
-using Innowise.Clinic.Profiles.Services.Constants;
 using Innowise.Clinic.Profiles.Services.DoctorService.Interfaces;
 using Innowise.Clinic.Profiles.Services.RabbitMq.RabbitMqPublisher;
+using Innowise.Clinic.Shared.Constants;
 using Microsoft.EntityFrameworkCore;
 
 namespace Innowise.Clinic.Profiles.Services.DoctorService.Implementations;

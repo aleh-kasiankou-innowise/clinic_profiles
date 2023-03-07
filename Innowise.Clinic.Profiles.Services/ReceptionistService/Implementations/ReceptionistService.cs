@@ -8,6 +8,7 @@ using Innowise.Clinic.Profiles.Persistence.Models;
 using Innowise.Clinic.Profiles.Services.Constants;
 using Innowise.Clinic.Profiles.Services.RabbitMq.RabbitMqPublisher;
 using Innowise.Clinic.Profiles.Services.ReceptionistService.Interfaces;
+using Innowise.Clinic.Shared.Constants;
 using Microsoft.EntityFrameworkCore;
 
 namespace Innowise.Clinic.Profiles.Services.ReceptionistService.Implementations;

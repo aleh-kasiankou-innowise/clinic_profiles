@@ -1,6 +1,8 @@
-﻿namespace Innowise.Clinic.Profiles.Persistence.Models;
+﻿using Innowise.Clinic.Profiles.Persistence.Interfaces;
 
-public class Patient
+namespace Innowise.Clinic.Profiles.Persistence.Models;
+
+public class Patient : IPersonRelatable
 {
     public Guid PatientId { get; set; }
     public Guid PersonId { get; set; }

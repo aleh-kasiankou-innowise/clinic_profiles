@@ -1,5 +1,7 @@
 using Innowise.Clinic.Profiles.Dto.Listing;
 using Innowise.Clinic.Profiles.Services.ReceptionistService.Interfaces;
+using Innowise.Clinic.Shared.Constants;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Innowise.Clinic.Profiles.API.Controllers;
@@ -16,6 +18,7 @@ public class ReceptionistsController : ControllerBase
     }
 
     [HttpGet]
+    [Authorize(Roles = $"{UserRoles.Receptionist}")]
     public async Task<ActionResult<IEnumerable<ReceptionistInfoDto>>> GetListing()
     {
         // add pagination

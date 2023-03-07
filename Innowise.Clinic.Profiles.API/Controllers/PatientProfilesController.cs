@@ -2,8 +2,8 @@ using Innowise.Clinic.Profiles.Configuration.Swagger.Examples;
 using Innowise.Clinic.Profiles.Dto.Profile.Patient;
 using Innowise.Clinic.Profiles.Exceptions;
 using Innowise.Clinic.Profiles.RequestPipeline;
-using Innowise.Clinic.Profiles.Services.Constants;
 using Innowise.Clinic.Profiles.Services.PatientService.Interfaces;
+using Innowise.Clinic.Shared.Constants;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Filters;
@@ -22,8 +22,8 @@ public class PatientProfilesController : ControllerBase
     }
 
     [HttpGet("{id:guid}")]
-    [Authorize(Roles = "Receptionist,Doctor,Patient")]
-    [AllowInteractionWithOwnProfileOnlyFilter("Patient")]
+    [Authorize(Roles = $"{UserRoles.Receptionist},{UserRoles.Doctor},{UserRoles.Patient}")]
+    [AllowInteractionWithOwnProfileOnlyFilter(UserRoles.Patient)]
     public async Task<ActionResult<ViewPatientProfileDto>> ViewPatientProfile([FromRoute] Guid id)
     {
         return Ok(await _patientService.GetPatientProfileAsync(id));
@@ -31,7 +31,7 @@ public class PatientProfilesController : ControllerBase
 
 
     [HttpPost]
-    [Authorize(Roles = "Receptionist,Patient")]
+    [Authorize(Roles = $"{UserRoles.Receptionist},{UserRoles.Patient}")]
     [SwaggerRequestExample(typeof(PatientProfileDto), typeof(CreatePatientProfileExamples))]
     public async Task<ActionResult<Guid>> CreatePatientProfile(
         [FromBody] PatientProfileDto newPatient)
@@ -51,8 +51,8 @@ public class PatientProfilesController : ControllerBase
     }
 
     [HttpPut("{id:guid}")]
-    [Authorize(Roles = "Receptionist, Patient")]
-    [AllowInteractionWithOwnProfileOnlyFilter("Patient")]
+    [Authorize(Roles = $"{UserRoles.Receptionist},{UserRoles.Patient}")]
+    [AllowInteractionWithOwnProfileOnlyFilter(UserRoles.Patient)]
     public async Task<IActionResult> EditPatientProfile([FromRoute] Guid id,
         [FromBody] PatientProfileWithNumberAndPhotoDto updatedPatient)
     {
@@ -62,7 +62,7 @@ public class PatientProfilesController : ControllerBase
 
 
     [HttpDelete("{id:guid}")]
-    [Authorize(Roles = "Receptionist")]
+    [Authorize(Roles = $"{UserRoles.Receptionist}")]
     public async Task<IActionResult> DeletePatientProfile([FromRoute] Guid id)
     {
         await _patientService.DeleteProfileAsync(id);
