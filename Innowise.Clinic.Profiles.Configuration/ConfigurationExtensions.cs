@@ -5,6 +5,7 @@ using Innowise.Clinic.Profiles.Services.ConsistencyManager.Implementations;
 using Innowise.Clinic.Profiles.Services.ConsistencyManager.Interfaces;
 using Innowise.Clinic.Profiles.Services.DoctorService.Implementations;
 using Innowise.Clinic.Profiles.Services.DoctorService.Interfaces;
+using Innowise.Clinic.Profiles.Services.MassTransitService.Consumers;
 using Innowise.Clinic.Profiles.Services.PatientService.Implementations;
 using Innowise.Clinic.Profiles.Services.PatientService.Interfaces;
 using Innowise.Clinic.Profiles.Services.ProfileLinkingService.Implementations;
@@ -13,6 +14,7 @@ using Innowise.Clinic.Profiles.Services.RabbitMq.RabbitMqPublisher;
 using Innowise.Clinic.Profiles.Services.RabbitMq.RabbitMqPublisher.Options;
 using Innowise.Clinic.Profiles.Services.ReceptionistService.Implementations;
 using Innowise.Clinic.Profiles.Services.ReceptionistService.Interfaces;
+using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
@@ -63,6 +65,24 @@ public static class ConfigurationExtensions
         services.Configure<RabbitOptions>(configuration.GetSection("RabbitConfigurations"));
         services.AddScoped<IConsistencyService, ConsistencyService>();
         services.AddSingleton<IRabbitMqPublisher, RabbitMqPublisher>();
+        var rabbitMqConfig = configuration.GetSection("RabbitConfigurations");
+        
+        services.AddMassTransit(x =>
+        {
+            x.AddConsumer<ConsistencyCheckRequestConsumer>();
+            x.AddConsumer<OfficeUpdatedConsumer>();
+            x.AddConsumer<SpecializationUpdatedConsumer>();
+            
+            x.UsingRabbitMq((context, cfg) =>
+            {
+                cfg.Host(rabbitMqConfig["HostName"], h =>
+                {
+                    h.Username(rabbitMqConfig["UserName"]);
+                    h.Password(rabbitMqConfig["Password"]);
+                });
+                cfg.ConfigureEndpoints(context);
+            });
+        });
         return services;
     }
 

@@ -19,7 +19,7 @@ public class ReceptionistService : IReceptionistService
     private readonly IRabbitMqPublisher _authenticationServiceConnection;
 
     public ReceptionistService(ProfilesDbContext dbContext,
-        RabbitMqPublisher authenticationServiceConnection)
+        IRabbitMqPublisher authenticationServiceConnection)
     {
         _dbContext = dbContext;
         _authenticationServiceConnection = authenticationServiceConnection;
@@ -100,7 +100,16 @@ public class ReceptionistService : IReceptionistService
     public async Task DeleteProfileAsync(Guid receptionistId)
     {
         var receptionist = await GetReceptionistById(receptionistId);
-        _authenticationServiceConnection.RemoveReceptionistAccount(receptionistId);
+        if (receptionist.Person.UserId != null)
+        {
+            var accountId = (Guid)receptionist.Person.UserId;
+            _authenticationServiceConnection.RemoveReceptionistAccount(accountId);
+        }
+        else
+        {
+            throw new InconsistentDataException("The receptionist is not linked to the account.");
+        }
+
         _dbContext.Receptionists.Remove(receptionist);
         await _dbContext.SaveChangesAsync();
     }
