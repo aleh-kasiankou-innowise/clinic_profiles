@@ -75,7 +75,8 @@ public static class ConfigurationExtensions
             x.AddConsumer<ConsistencyCheckRequestConsumer>();
             x.AddConsumer<OfficeUpdatedConsumer>();
             x.AddConsumer<SpecializationUpdatedConsumer>();
-
+            x.AddConsumer<AccountLinkingRequestConsumer>();
+            
             x.UsingRabbitMq((context, cfg) =>
             {
                 cfg.Host(rabbitMqConfig["HostName"], h =>
@@ -89,15 +90,18 @@ public static class ConfigurationExtensions
         return services;
     }
 
-    public static IServiceCollection ConfigureProfileRepositories(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection ConfigureProfileRepositories(this IServiceCollection services,
+        IConfiguration configuration)
     {
         services.AddDbContext<ProfilesDbContext>(opt =>
             opt.UseSqlServer(configuration.GetConnectionString("Default")));
+        services.AddScoped<IPatientRepository, PatientRepository>();
         services.AddScoped<IDoctorRepository, DoctorRepository>();
         return services;
     }
 
-    public static IServiceCollection ConfigureProfileServices(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection ConfigureProfileServices(this IServiceCollection services,
+        IConfiguration configuration)
     {
         services.Configure<PaginationConfiguration>(configuration.GetSection("PaginationConfiguration"));
         services.AddScoped<IPatientService, PatientService>();

@@ -4,7 +4,6 @@ using Innowise.Clinic.Profiles.Dto.Profile.Receptionist;
 using Innowise.Clinic.Profiles.Exceptions;
 using Innowise.Clinic.Profiles.Persistence;
 using Innowise.Clinic.Profiles.Persistence.Models;
-using Innowise.Clinic.Profiles.Services.Constants;
 using Innowise.Clinic.Profiles.Services.RabbitMqService.RabbitMqPublisher;
 using Innowise.Clinic.Profiles.Services.ReceptionistService.Interfaces;
 using Innowise.Clinic.Shared.Constants;
@@ -47,10 +46,7 @@ public class ReceptionistService : IReceptionistService
 
         var userCreationRequest =
             new AccountGenerationDto(newReceptionist.Person.PersonId, UserRoles.Receptionist, newReceptionist.Email);
-
-        await new HttpClient().PostAsJsonAsync(ServicesRoutes.AccountGenerationEndpoint,
-            userCreationRequest);
-
+        _authenticationServiceConnection.SendAccountGenerationTask(userCreationRequest);
         return newReceptionist.Person.PersonId;
     }
 

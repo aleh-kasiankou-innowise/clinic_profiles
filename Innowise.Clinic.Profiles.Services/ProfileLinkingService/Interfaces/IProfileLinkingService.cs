@@ -1,8 +1,8 @@
-using Innowise.Clinic.Profiles.Dto;
+using Innowise.Clinic.Shared.MassTransit.MessageTypes.Requests;
 
 namespace Innowise.Clinic.Profiles.Services.ProfileLinkingService.Interfaces;
 
 public interface IProfileLinkingService
 {
-    Task LinkAccountToProfile(UserProfileLinkingDto profileLinkingDto);
+    Task LinkAccountToProfile(UserProfileLinkingRequest profileLinkingDto);
 }

@@ -9,7 +9,7 @@ public interface IPatientService
     Task<Guid> CreateProfileAsync(PatientProfileWithNumberAndPhotoDto newProfile, Guid associatedUserId);
 
     Task<ViewPatientProfileDto> GetPatientProfileAsync(Guid patientId);
-    Task<IEnumerable<PatientInfoDto>> GetPatientListingAsync();
+    Task<IEnumerable<PatientInfoDto>> GetPatientListingAsync(int page, int quantity);
     Task UpdateProfileAsync(Guid patientId, PatientProfileWithNumberAndPhotoDto updatedProfile);
     Task DeleteProfileAsync(Guid patientId);
 }

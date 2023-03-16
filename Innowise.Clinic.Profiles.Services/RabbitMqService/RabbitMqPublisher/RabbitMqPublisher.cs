@@ -44,6 +44,8 @@ public class RabbitMqPublisher : IRabbitMqPublisher
 
     public void SendAccountGenerationTask(AccountGenerationDto userCreationRequestDto)
     {
+        // TODO CONVERT TO REQUEST - RESPONSE MODEL
+        // NOW IF ACCOUNT CREATION FAILS, THE 200 (OK) IS RETURNED
         var body = JsonSerializer.SerializeToUtf8Bytes(userCreationRequestDto);
         _channel.BasicPublish(exchange: _rabbitOptions.ProfilesAuthenticationExchangeName,
             routingKey: _rabbitOptions.AccountGenerationRoutingKey,

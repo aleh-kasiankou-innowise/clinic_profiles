@@ -1,15 +1,13 @@
-using Innowise.Clinic.Profiles.Dto;
 using Innowise.Clinic.Profiles.Exceptions;
 using Innowise.Clinic.Profiles.Persistence;
 using Innowise.Clinic.Profiles.Services.ProfileLinkingService.Interfaces;
+using Innowise.Clinic.Shared.MassTransit.MessageTypes.Requests;
 
 namespace Innowise.Clinic.Profiles.Services.ProfileLinkingService.Implementations;
 
 public class ProfileLinkingService : IProfileLinkingService
 {
-    private const string PatientRole = "Patient";
-    private const string DoctorRole = "Doctor";
-    private const string ReceptionistRole = "Receptionist";
+
     private readonly ProfilesDbContext _dbContext;
 
     public ProfileLinkingService(ProfilesDbContext dbContext)
@@ -17,7 +15,7 @@ public class ProfileLinkingService : IProfileLinkingService
         _dbContext = dbContext;
     }
 
-    public async Task LinkAccountToProfile(UserProfileLinkingDto profileLinkingDto)
+    public async Task LinkAccountToProfile(UserProfileLinkingRequest profileLinkingDto)
     {
         var personProfile = _dbContext.Persons.FirstOrDefault(x => x.PersonId == profileLinkingDto.ProfileId);
 

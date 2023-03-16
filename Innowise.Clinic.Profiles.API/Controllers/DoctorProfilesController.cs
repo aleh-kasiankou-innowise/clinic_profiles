@@ -22,7 +22,6 @@ public class DoctorProfilesController : ApiControllerBase
 
     [HttpGet("{id:guid}")]
     [Authorize(Roles = $"{UserRoles.Receptionist},{UserRoles.Doctor}")]
-
     [AllowInteractionWithOwnProfileOnlyFilter(UserRoles.Doctor)]
     public async Task<ActionResult<InternalClinicDoctorProfileDto>> ViewProfile([FromRoute] Guid id)
     {
