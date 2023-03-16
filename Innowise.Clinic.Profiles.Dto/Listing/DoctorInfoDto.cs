@@ -4,12 +4,12 @@ using System.Text.Json.Serialization;
 namespace Innowise.Clinic.Profiles.Dto.Listing;
 
 [JsonPolymorphic]
-[JsonDerivedType(typeof(DoctorInfoDto), "base")]
+[JsonDerivedType(typeof(DoctorPublicInfoDto), "base")]
 [JsonDerivedType(typeof(DoctorInfoReceptionistDto), "receptionist")]
 public record DoctorInfoBaseDto(Guid DoctorId, string FirstName, string LastName, string? MiddleName,
     Guid SpecializationId, Guid OfficeId);
 
-public record DoctorInfoDto(Guid DoctorId, string FirstName, string LastName, string? MiddleName,
+public record DoctorPublicInfoDto(Guid DoctorId, string FirstName, string LastName, string? MiddleName,
     Guid SpecializationId, Guid OfficeId, [Required] DateTime CareerStartYear, byte[]? Photo) : DoctorInfoBaseDto(
     DoctorId,
     FirstName, LastName, MiddleName,

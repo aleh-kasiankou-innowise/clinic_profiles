@@ -1,6 +1,4 @@
-using Innowise.Clinic.Profiles.Persistence.Models;
-
-namespace Innowise.Clinic.Profiles.Persistence.Interfaces;
+namespace Innowise.Clinic.Profiles.Persistence.Models.Interfaces;
 
 public interface IPersonRelatable
 {

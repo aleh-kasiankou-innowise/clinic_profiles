@@ -7,12 +7,23 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="Innowise.Clinic.Shared" Version="0.0.16" />
         <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.2" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="7.0.2" />
     </ItemGroup>
 
     <ItemGroup>
         <Folder Include="Migrations" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Innowise.Clinic.Profiles.Exceptions\Innowise.Clinic.Profiles.Exceptions.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Reference Include="Innowise.Clinic.Shared">
+        <HintPath>..\..\..\..\..\.nuget\packages\innowise.clinic.shared\0.0.10\lib\net6.0\Innowise.Clinic.Shared.dll</HintPath>
+      </Reference>
     </ItemGroup>
 
 </Project>

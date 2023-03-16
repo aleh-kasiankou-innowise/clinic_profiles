@@ -4,18 +4,14 @@ using Innowise.Clinic.Profiles.Exceptions;
 using Innowise.Clinic.Profiles.RequestPipeline;
 using Innowise.Clinic.Profiles.Services.DoctorService.Interfaces;
 using Innowise.Clinic.Shared.Constants;
+using Innowise.Clinic.Shared.ControllersAbstractions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Filters;
 
 namespace Innowise.Clinic.Profiles.API.Controllers;
 
-// TODO MOVE CONTROLLER BASE CLASS TO SHARED PACKAGE
-
-[ApiController]
-[Route("[controller]")]
-[Produces("application/json")]
-public class DoctorProfilesController : ControllerBase
+public class DoctorProfilesController : ApiControllerBase
 {
     private readonly IDoctorService _doctorService;
 
@@ -28,7 +24,7 @@ public class DoctorProfilesController : ControllerBase
     [Authorize(Roles = $"{UserRoles.Receptionist},{UserRoles.Doctor}")]
 
     [AllowInteractionWithOwnProfileOnlyFilter(UserRoles.Doctor)]
-    public async Task<ActionResult<ViewDoctorProfileDto>> ViewProfile([FromRoute] Guid id)
+    public async Task<ActionResult<InternalClinicDoctorProfileDto>> ViewProfile([FromRoute] Guid id)
     {
         return Ok(await _doctorService.GetProfileAsync(id));
     }

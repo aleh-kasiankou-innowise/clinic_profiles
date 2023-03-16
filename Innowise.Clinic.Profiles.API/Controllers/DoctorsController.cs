@@ -1,7 +1,9 @@
+using Innowise.Clinic.Profiles.Configuration.Options;
 using Innowise.Clinic.Profiles.Dto.Listing;
 using Innowise.Clinic.Profiles.Services.DoctorService.Interfaces;
 using Innowise.Clinic.Shared.Constants;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 
 namespace Innowise.Clinic.Profiles.API.Controllers;
 
@@ -10,31 +12,30 @@ namespace Innowise.Clinic.Profiles.API.Controllers;
 public class DoctorsController : ControllerBase
 {
     private readonly IDoctorService _doctorService;
+    private readonly PaginationConfiguration _paginationConfiguration;
 
-    public DoctorsController(IDoctorService doctorService)
+    public DoctorsController(IDoctorService doctorService, IOptions<PaginationConfiguration> paginationConfiguration)
     {
         _doctorService = doctorService;
+        _paginationConfiguration = paginationConfiguration.Value;
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<DoctorInfoDto>>> GetDoctorsListing()
+    public async Task<ActionResult<IEnumerable<DoctorPublicInfoDto>>> GetDoctorsListing([FromQuery] int page = 1)
     {
         // TODO ADD FILTERS
-        // TODO ADD PAGINATION
-
         // Possible Filters:
         // Specialization : GUID
         // Office: Guid
 
         // + search by name
-
-        if (User.IsInRole(UserRoles.Receptionist)) return Ok(await _doctorService.GetListingForReceptionistAsync());
-
-        return Ok(await _doctorService.GetListingAsync());
+        return Ok(User.IsInRole(UserRoles.Receptionist)
+            ? await _doctorService.GetListingForReceptionistAsync(page, _paginationConfiguration.DoctorsPerPageAdminFrontend)
+            : await _doctorService.GetListingAsync(page, _paginationConfiguration.DoctorsPerPagePublicFrontend));
     }
 
     [HttpGet("{id:guid}")]
-    public async Task<ActionResult<DoctorInfoDto>> GetDoctorDetails([FromRoute] Guid id)
+    public async Task<ActionResult<DoctorPublicInfoDto>> GetDoctorDetails([FromRoute] Guid id)
     {
         return Ok(await _doctorService.GetPublicInfo(id));
     }

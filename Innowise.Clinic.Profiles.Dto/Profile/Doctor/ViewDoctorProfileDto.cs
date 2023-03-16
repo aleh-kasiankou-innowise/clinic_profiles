@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Innowise.Clinic.Profiles.Dto.Profile.Doctor;
 
-public class ViewDoctorProfileDto
+public class InternalClinicDoctorProfileDto
 {
     public byte[]? Photo { get; set; }
 

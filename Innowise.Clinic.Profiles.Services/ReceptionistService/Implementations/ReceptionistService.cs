@@ -1,14 +1,14 @@
 using System.Net.Http.Json;
-using Innowise.Clinic.Profiles.Dto;
 using Innowise.Clinic.Profiles.Dto.Listing;
 using Innowise.Clinic.Profiles.Dto.Profile.Receptionist;
 using Innowise.Clinic.Profiles.Exceptions;
 using Innowise.Clinic.Profiles.Persistence;
 using Innowise.Clinic.Profiles.Persistence.Models;
 using Innowise.Clinic.Profiles.Services.Constants;
-using Innowise.Clinic.Profiles.Services.RabbitMq.RabbitMqPublisher;
+using Innowise.Clinic.Profiles.Services.RabbitMqService.RabbitMqPublisher;
 using Innowise.Clinic.Profiles.Services.ReceptionistService.Interfaces;
 using Innowise.Clinic.Shared.Constants;
+using Innowise.Clinic.Shared.Dto;
 using Microsoft.EntityFrameworkCore;
 
 namespace Innowise.Clinic.Profiles.Services.ReceptionistService.Implementations;

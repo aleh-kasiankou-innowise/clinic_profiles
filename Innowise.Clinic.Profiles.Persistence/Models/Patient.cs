@@ -1,4 +1,4 @@
-﻿using Innowise.Clinic.Profiles.Persistence.Interfaces;
+﻿using Innowise.Clinic.Profiles.Persistence.Models.Interfaces;
 
 namespace Innowise.Clinic.Profiles.Persistence.Models;
 

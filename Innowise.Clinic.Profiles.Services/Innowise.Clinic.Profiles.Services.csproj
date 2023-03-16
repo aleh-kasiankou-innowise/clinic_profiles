@@ -13,7 +13,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="Innowise.Clinic.Shared" Version="0.0.10" />
+      <PackageReference Include="Innowise.Clinic.Shared" Version="0.0.16" />
       <PackageReference Include="MassTransit" Version="8.0.13" />
       <PackageReference Include="MassTransit.RabbitMQ" Version="8.0.13" />
       <PackageReference Include="Microsoft.AspNetCore.Hosting.Abstractions" Version="2.2.0" />
@@ -27,7 +27,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="RabbitMq" />
+      <Folder Include="RabbitMqService" />
     </ItemGroup>
 
 </Project>

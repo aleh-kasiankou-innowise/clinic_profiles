@@ -6,11 +6,11 @@ namespace Innowise.Clinic.Profiles.Services.DoctorService.Interfaces;
 public interface IDoctorService
 {
     Task<Guid> CreateProfileAsync(DoctorProfileDto newProfile);
-    Task<ViewDoctorProfileDto> GetProfileAsync(Guid doctorId);
-    Task<IEnumerable<DoctorInfoDto>> GetListingAsync();
-
-    Task<DoctorInfoDto> GetPublicInfo(Guid id);
-    Task<IEnumerable<DoctorInfoReceptionistDto>> GetListingForReceptionistAsync();
+    Task<InternalClinicDoctorProfileDto> GetProfileAsync(Guid doctorId);
+    // TODO CHECK IF WE NEED DIFFERENT LISTING RETRIEVING METHODS
+    Task<IEnumerable<DoctorPublicInfoDto>> GetListingAsync(int page, int quantity);
+    Task<DoctorPublicInfoDto> GetPublicInfo(Guid id);
+    Task<IEnumerable<DoctorInfoReceptionistDto>> GetListingForReceptionistAsync(int page, int quantity);
     Task UpdateProfileAsync(Guid doctorId, DoctorProfileUpdateDto updatedProfile);
     Task UpdateStatusAsync(Guid doctorId, Guid newStatusId);
 }

@@ -1,6 +1,9 @@
 ﻿using System.Text;
+using Innowise.Clinic.Profiles.Configuration.Options;
 using Innowise.Clinic.Profiles.Configuration.Swagger.Examples;
 using Innowise.Clinic.Profiles.Persistence;
+using Innowise.Clinic.Profiles.Persistence.Repositories.Implementations;
+using Innowise.Clinic.Profiles.Persistence.Repositories.Interfaces;
 using Innowise.Clinic.Profiles.Services.ConsistencyManager.Implementations;
 using Innowise.Clinic.Profiles.Services.ConsistencyManager.Interfaces;
 using Innowise.Clinic.Profiles.Services.DoctorService.Implementations;
@@ -10,8 +13,8 @@ using Innowise.Clinic.Profiles.Services.PatientService.Implementations;
 using Innowise.Clinic.Profiles.Services.PatientService.Interfaces;
 using Innowise.Clinic.Profiles.Services.ProfileLinkingService.Implementations;
 using Innowise.Clinic.Profiles.Services.ProfileLinkingService.Interfaces;
-using Innowise.Clinic.Profiles.Services.RabbitMq.RabbitMqPublisher;
-using Innowise.Clinic.Profiles.Services.RabbitMq.RabbitMqPublisher.Options;
+using Innowise.Clinic.Profiles.Services.RabbitMqService.RabbitMqPublisher;
+using Innowise.Clinic.Profiles.Services.RabbitMqService.RabbitMqPublisher.Options;
 using Innowise.Clinic.Profiles.Services.ReceptionistService.Implementations;
 using Innowise.Clinic.Profiles.Services.ReceptionistService.Interfaces;
 using MassTransit;
@@ -66,13 +69,13 @@ public static class ConfigurationExtensions
         services.AddScoped<IConsistencyService, ConsistencyService>();
         services.AddSingleton<IRabbitMqPublisher, RabbitMqPublisher>();
         var rabbitMqConfig = configuration.GetSection("RabbitConfigurations");
-        
+
         services.AddMassTransit(x =>
         {
             x.AddConsumer<ConsistencyCheckRequestConsumer>();
             x.AddConsumer<OfficeUpdatedConsumer>();
             x.AddConsumer<SpecializationUpdatedConsumer>();
-            
+
             x.UsingRabbitMq((context, cfg) =>
             {
                 cfg.Host(rabbitMqConfig["HostName"], h =>
@@ -86,8 +89,17 @@ public static class ConfigurationExtensions
         return services;
     }
 
-    public static IServiceCollection ConfigureProfileServices(this IServiceCollection services)
+    public static IServiceCollection ConfigureProfileRepositories(this IServiceCollection services, IConfiguration configuration)
     {
+        services.AddDbContext<ProfilesDbContext>(opt =>
+            opt.UseSqlServer(configuration.GetConnectionString("Default")));
+        services.AddScoped<IDoctorRepository, DoctorRepository>();
+        return services;
+    }
+
+    public static IServiceCollection ConfigureProfileServices(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.Configure<PaginationConfiguration>(configuration.GetSection("PaginationConfiguration"));
         services.AddScoped<IPatientService, PatientService>();
         services.AddScoped<IDoctorService, DoctorService>();
         services.AddScoped<IReceptionistService, ReceptionistService>();

@@ -1,6 +1,6 @@
 using Innowise.Clinic.Profiles.Exceptions;
 using Innowise.Clinic.Profiles.Persistence;
-using Innowise.Clinic.Profiles.Persistence.Interfaces;
+using Innowise.Clinic.Profiles.Persistence.Models.Interfaces;
 using Innowise.Clinic.Shared.Constants;
 using Innowise.Clinic.Shared.MassTransit.MessageTypes.Requests;
 using MassTransit;
