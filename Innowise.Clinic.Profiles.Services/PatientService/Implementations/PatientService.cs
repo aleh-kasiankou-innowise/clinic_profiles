@@ -1,11 +1,9 @@
-using System.Net.Http.Json;
 using Innowise.Clinic.Profiles.Dto.Listing;
 using Innowise.Clinic.Profiles.Dto.Profile.Patient;
 using Innowise.Clinic.Profiles.Persistence.Repositories.Interfaces;
 using Innowise.Clinic.Profiles.Services.MappingService;
 using Innowise.Clinic.Profiles.Services.PatientService.Interfaces;
 using Innowise.Clinic.Shared.MassTransit.MessageTypes.Events;
-using Innowise.Clinic.Shared.MassTransit.MessageTypes.Requests;
 using MassTransit;
 
 namespace Innowise.Clinic.Profiles.Services.PatientService.Implementations;

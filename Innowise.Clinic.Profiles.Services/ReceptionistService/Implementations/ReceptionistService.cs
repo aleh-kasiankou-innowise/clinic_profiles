@@ -1,101 +1,64 @@
-using System.Net.Http.Json;
 using Innowise.Clinic.Profiles.Dto.Listing;
 using Innowise.Clinic.Profiles.Dto.Profile.Receptionist;
 using Innowise.Clinic.Profiles.Exceptions;
-using Innowise.Clinic.Profiles.Persistence;
-using Innowise.Clinic.Profiles.Persistence.Models;
+using Innowise.Clinic.Profiles.Persistence.Repositories.Interfaces;
+using Innowise.Clinic.Profiles.Services.MappingService;
 using Innowise.Clinic.Profiles.Services.RabbitMqService.RabbitMqPublisher;
 using Innowise.Clinic.Profiles.Services.ReceptionistService.Interfaces;
 using Innowise.Clinic.Shared.Constants;
 using Innowise.Clinic.Shared.Dto;
-using Microsoft.EntityFrameworkCore;
 
 namespace Innowise.Clinic.Profiles.Services.ReceptionistService.Implementations;
 
 public class ReceptionistService : IReceptionistService
 {
-    private readonly ProfilesDbContext _dbContext;
     private readonly IRabbitMqPublisher _authenticationServiceConnection;
+    private readonly IReceptionistRepository _receptionistRepository;
 
-    public ReceptionistService(ProfilesDbContext dbContext,
-        IRabbitMqPublisher authenticationServiceConnection)
+    public ReceptionistService(IRabbitMqPublisher authenticationServiceConnection,
+        IReceptionistRepository receptionistRepository)
     {
-        _dbContext = dbContext;
         _authenticationServiceConnection = authenticationServiceConnection;
+        _receptionistRepository = receptionistRepository;
     }
 
     public async Task<Guid> CreateProfileAsync(CreateReceptionistProfileDto newProfile)
     {
-        var newPerson = new Person
-        {
-            FirstName = newProfile.FirstName,
-            LastName = newProfile.LastName,
-            MiddleName = newProfile.MiddleName,
-            Photo = newProfile.Photo
-        };
-
-        var newReceptionist = new Receptionist
-        {
-            Email = newProfile.Email,
-            OfficeId = newProfile.OfficeId,
-            Person = newPerson
-        };
-
-        await _dbContext.Receptionists.AddAsync(newReceptionist);
-        await _dbContext.SaveChangesAsync();
-
+        var newReceptionist = newProfile.CreateNewProfile();
+        await _receptionistRepository.CreateProfileAsync(newReceptionist);
         var userCreationRequest =
             new AccountGenerationDto(newReceptionist.Person.PersonId, UserRoles.Receptionist, newReceptionist.Email);
+
         _authenticationServiceConnection.SendAccountGenerationTask(userCreationRequest);
         return newReceptionist.Person.PersonId;
     }
 
     public async Task<ViewReceptionistProfileDto> GetProfileAsync(Guid receptionistId)
     {
-        var receptionist = await GetReceptionistById(receptionistId);
-
-        return new ViewReceptionistProfileDto
-        {
-            ReceptionistId = receptionist.Person.PersonId,
-            FirstName = receptionist.Person.FirstName,
-            LastName = receptionist.Person.LastName,
-            MiddleName = receptionist.Person.MiddleName,
-            OfficeId = receptionist.OfficeId,
-            Photo = receptionist.Person.Photo
-        };
+        var receptionist = await _receptionistRepository.GetProfileAsync(receptionistId);
+        return receptionist.ToProfileDto();
     }
 
-    public async Task<IEnumerable<ReceptionistInfoDto>> GetListingAsync()
+    public async Task<IEnumerable<ReceptionistInfoDto>> GetListingAsync(int page, int quantity)
     {
-        var receptionistInfoDtos = _dbContext.Receptionists.Include(x => x.Person).Select(r => new ReceptionistInfoDto
-        {
-            ReceptionistId = r.Person.PersonId,
-            FirstName = r.Person.FirstName,
-            LastName = r.Person.LastName,
-            MiddleName = r.Person.MiddleName,
-            OfficeId = r.OfficeId
-        });
-
-        return await receptionistInfoDtos.ToListAsync();
+        var receptionistListing = await _receptionistRepository.GetListingAsync(page, quantity);
+        return receptionistListing.ToReceptionistDtoListing();
     }
 
     public async Task UpdateProfileAsync(Guid receptionistId, EditReceptionistProfileDto updatedProfile)
     {
-        var receptionist = await GetReceptionistById(receptionistId);
+        var receptionist = await _receptionistRepository.GetProfileAsync(receptionistId);
 
         receptionist.OfficeId = updatedProfile.OfficeId;
         receptionist.Person.FirstName = updatedProfile.FirstName;
         receptionist.Person.LastName = updatedProfile.LastName;
         receptionist.Person.MiddleName = updatedProfile.MiddleName;
         receptionist.Person.Photo = updatedProfile.Photo;
-
-        _dbContext.Update(receptionist);
-        await _dbContext.SaveChangesAsync();
     }
 
     public async Task DeleteProfileAsync(Guid receptionistId)
     {
-        var receptionist = await GetReceptionistById(receptionistId);
+        var receptionist = await _receptionistRepository.GetProfileAsync(receptionistId);
         if (receptionist.Person.UserId != null)
         {
             var accountId = (Guid)receptionist.Person.UserId;
@@ -105,21 +68,5 @@ public class ReceptionistService : IReceptionistService
         {
             throw new InconsistentDataException("The receptionist is not linked to the account.");
         }
-
-        _dbContext.Receptionists.Remove(receptionist);
-        await _dbContext.SaveChangesAsync();
-    }
-
-    private async Task<Receptionist> GetReceptionistById(Guid id)
-    {
-        var receptionist = await _dbContext.Receptionists
-            .Include(x => x.Person)
-            .FirstOrDefaultAsync(x => x.Person.PersonId == id);
-
-        if (receptionist == null)
-            throw new ProfileNotFoundException(
-                "The receptionist with the requested id is not registered in the system.");
-
-        return receptionist;
     }
 }

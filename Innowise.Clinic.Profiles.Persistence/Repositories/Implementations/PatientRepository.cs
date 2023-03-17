@@ -1,5 +1,6 @@
 using Innowise.Clinic.Profiles.Persistence.Models;
 using Innowise.Clinic.Profiles.Persistence.Repositories.Interfaces;
+using Innowise.Clinic.Profiles.Persistence.Utilities;
 using Innowise.Clinic.Shared.Exceptions;
 using Microsoft.EntityFrameworkCore;
 
@@ -24,14 +25,15 @@ public class PatientRepository : IPatientRepository
     public async Task<Patient> GetPatientProfileAsync(Guid patientId)
     {
         return await _dbContext.Patients.Include(x => x.Person).FirstOrDefaultAsync(x => x.PersonId == patientId) ??
-               throw new EntityNotFoundException($"The patient with id {patientId} does not exist.");
+               throw new EntityNotFoundException(nameof(Patient), nameof(Patient.PersonId),
+                   patientId.ToString());
     }
 
     public async Task<IEnumerable<Patient>> GetPatientListingAsync(int page, int quantity)
     {
         return await _dbContext.Patients
             .Include(x => x.Person)
-            .Skip(CalculateOffset(page, quantity))
+            .Skip(RepositoryUtilities.CalculateOffset(page, quantity))
             .Take(quantity)
             .ToListAsync();
     }
@@ -45,10 +47,9 @@ public class PatientRepository : IPatientRepository
     public async Task DeleteProfileAsync(Guid patientId)
     {
         var patient = await _dbContext.Patients.SingleOrDefaultAsync(x => x.Person.PersonId == patientId) ??
-                      throw new EntityNotFoundException($"The patient with id {patientId} does not exist.");
+                      throw new EntityNotFoundException(nameof(Patient), nameof(Patient.PersonId),
+                          patientId.ToString());
         _dbContext.Patients.Remove(patient);
         await _dbContext.SaveChangesAsync();
     }
-
-    private int CalculateOffset(int page, int pageSize) => page * pageSize - pageSize;
 }

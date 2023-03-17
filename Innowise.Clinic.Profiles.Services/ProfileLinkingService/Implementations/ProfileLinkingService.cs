@@ -1,13 +1,13 @@
-using Innowise.Clinic.Profiles.Exceptions;
 using Innowise.Clinic.Profiles.Persistence;
+using Innowise.Clinic.Profiles.Persistence.Models;
 using Innowise.Clinic.Profiles.Services.ProfileLinkingService.Interfaces;
+using Innowise.Clinic.Shared.Exceptions;
 using Innowise.Clinic.Shared.MassTransit.MessageTypes.Requests;
 
 namespace Innowise.Clinic.Profiles.Services.ProfileLinkingService.Implementations;
 
 public class ProfileLinkingService : IProfileLinkingService
 {
-
     private readonly ProfilesDbContext _dbContext;
 
     public ProfileLinkingService(ProfilesDbContext dbContext)
@@ -17,9 +17,9 @@ public class ProfileLinkingService : IProfileLinkingService
 
     public async Task LinkAccountToProfile(UserProfileLinkingRequest profileLinkingDto)
     {
-        var personProfile = _dbContext.Persons.FirstOrDefault(x => x.PersonId == profileLinkingDto.ProfileId);
-
-        if (personProfile == null) throw new ProfileNotFoundException("There is no user with the requested id");
+        var personProfile = _dbContext.Persons.FirstOrDefault(x => x.PersonId == profileLinkingDto.ProfileId) ??
+                            throw new EntityNotFoundException(nameof(Person), nameof(Person.PersonId),
+                                profileLinkingDto.ProfileId.ToString());
 
         personProfile.UserId = profileLinkingDto.UserId;
         _dbContext.Update(personProfile);

@@ -1,6 +1,6 @@
-using Innowise.Clinic.Profiles.Exceptions;
 using Innowise.Clinic.Profiles.Persistence.Models;
 using Innowise.Clinic.Profiles.Persistence.Repositories.Interfaces;
+using Innowise.Clinic.Profiles.Persistence.Utilities;
 using Innowise.Clinic.Shared.Exceptions;
 using Microsoft.EntityFrameworkCore;
 
@@ -30,7 +30,8 @@ public class DoctorRepository : IDoctorRepository
             .Include(x => x.Specialization)
             .SingleOrDefaultAsync(x => x.DoctorId == doctorId);
         return doctor ??
-               throw new ProfileNotFoundException("The doctor with the specified id is not registered in the system.");
+               throw new EntityNotFoundException(nameof(Doctor), nameof(Doctor.PersonId),
+                   doctorId.ToString());
     }
 
     public async Task<IEnumerable<Doctor>> GetDoctorListingAsync(int page, int quantity,
@@ -44,7 +45,7 @@ public class DoctorRepository : IDoctorRepository
             : _dbContext.Doctors.Where(x => specification(x));
 
         return doctorsQueryBase.Include(x => x.Person)
-            .Skip(CalculateOffset(page, quantity))
+            .Skip(RepositoryUtilities.CalculateOffset(page, quantity))
             .Take(quantity);
     }
 
@@ -54,11 +55,10 @@ public class DoctorRepository : IDoctorRepository
         await _dbContext.SaveChangesAsync();
     }
 
-    public async Task<DoctorStatus> GetDoctorStatus(Guid doctorId)
+    public async Task<DoctorStatus> GetDoctorStatus(Guid doctorStatusId)
     {
-        return await _dbContext.Statuses.FindAsync(doctorId) ??
-               throw new EntityNotFoundException($"There is no doctor status with id: {doctorId}");
+        return await _dbContext.Statuses.FindAsync(doctorStatusId) ??
+               throw new EntityNotFoundException(nameof(DoctorStatus), nameof(DoctorStatus.StatusId),
+                   doctorStatusId.ToString());
     }
-    
-    private int CalculateOffset(int page, int pageSize) => page * pageSize - pageSize;
 }
