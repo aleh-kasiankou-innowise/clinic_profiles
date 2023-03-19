@@ -76,7 +76,7 @@ public static class ConfigurationExtensions
             x.AddConsumer<OfficeUpdatedConsumer>();
             x.AddConsumer<SpecializationUpdatedConsumer>();
             x.AddConsumer<AccountLinkingRequestConsumer>();
-            
+
             x.UsingRabbitMq((context, cfg) =>
             {
                 cfg.Host(rabbitMqConfig["HostName"], h =>

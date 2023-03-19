@@ -1,6 +1,7 @@
 using Innowise.Clinic.Profiles.Configuration.Options;
 using Innowise.Clinic.Profiles.Dto.Listing;
 using Innowise.Clinic.Profiles.Services.DoctorService.Interfaces;
+using Innowise.Clinic.Profiles.Services.FiltrationService.Filters;
 using Innowise.Clinic.Shared.Constants;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
@@ -21,17 +22,11 @@ public class DoctorsController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<DoctorPublicInfoDto>>> GetDoctorsListing([FromQuery] int page = 1)
+    public async Task<ActionResult<IEnumerable<DoctorPublicInfoDto>>> GetDoctorsListing([FromQuery] DoctorFilter filter, [FromQuery] int page = 1)
     {
-        // TODO ADD FILTERS
-        // Possible Filters:
-        // Specialization : GUID
-        // Office: Guid
-
-        // + search by name
         return Ok(User.IsInRole(UserRoles.Receptionist)
             ? await _doctorService.GetListingForReceptionistAsync(page, _paginationConfiguration.DoctorsPerPageAdminFrontend)
-            : await _doctorService.GetListingAsync(page, _paginationConfiguration.DoctorsPerPagePublicFrontend));
+            : await _doctorService.GetListingAsync(page, _paginationConfiguration.DoctorsPerPagePublicFrontend, filter));
     }
 
     [HttpGet("{id:guid}")]

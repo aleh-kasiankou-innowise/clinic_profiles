@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using Innowise.Clinic.Profiles.Persistence.Models;
 using Innowise.Clinic.Profiles.Persistence.Repositories.Interfaces;
 using Innowise.Clinic.Profiles.Persistence.Utilities;
@@ -35,14 +36,15 @@ public class DoctorRepository : IDoctorRepository
     }
 
     public async Task<IEnumerable<Doctor>> GetDoctorListingAsync(int page, int quantity,
-        Func<Doctor, bool>? specification = null)
+        Expression<Func<Doctor, bool>>? specification = null)
     {
         // TODO TRY TO SELECT ONLY NECESSARY FIELDS
         // TODO IMPLEMENT SPECIFICATION PATTERN
         // USE-CASE - return only active doctors
         var doctorsQueryBase = specification is null
             ? _dbContext.Doctors.AsQueryable()
-            : _dbContext.Doctors.Where(x => specification(x));
+            : _dbContext.Doctors.Include(x => x.Status)
+                .Where(specification);
 
         return doctorsQueryBase.Include(x => x.Person)
             .Skip(RepositoryUtilities.CalculateOffset(page, quantity))

@@ -47,14 +47,8 @@ public static class PatientMappingExtensions
 
     public static IEnumerable<PatientInfoDto> ToPatientInfoDtoListing(this IEnumerable<Patient> patients)
     {
-        return patients.Select(x => new PatientInfoDto
-        {
-            PatientId = x.Person.PersonId,
-            FirstName = x.Person.FirstName,
-            LastName = x.Person.LastName,
-            MiddleName = x.Person.MiddleName,
-            PhoneNumber = x.PhoneNumber
-        });
+        return patients.Select(x =>
+            new PatientInfoDto(x.PersonId, x.Person.FirstName, x.Person.LastName, x.PhoneNumber, x.Person.MiddleName));
     }
 
     public static Patient UpdateProfile(this Patient patient, PatientProfileWithNumberAndPhotoDto updatedProfile)

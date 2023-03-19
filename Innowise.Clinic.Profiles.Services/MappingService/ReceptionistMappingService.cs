@@ -42,13 +42,8 @@ public static class ReceptionistMappingService
     public static IEnumerable<ReceptionistInfoDto> ToReceptionistDtoListing(
         this IEnumerable<Receptionist> receptionists)
     {
-        return receptionists.Select(r => new ReceptionistInfoDto
-        {
-            ReceptionistId = r.Person.PersonId,
-            FirstName = r.Person.FirstName,
-            LastName = r.Person.LastName,
-            MiddleName = r.Person.MiddleName,
-            OfficeId = r.OfficeId
-        });
+        return receptionists.Select(r =>
+            new ReceptionistInfoDto(r.PersonId, r.Person.FirstName, r.Person.LastName, r.OfficeId,
+                r.Person.MiddleName));
     }
 }

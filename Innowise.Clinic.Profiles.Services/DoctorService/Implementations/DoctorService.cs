@@ -5,6 +5,7 @@ using Innowise.Clinic.Profiles.Exceptions;
 using Innowise.Clinic.Profiles.Persistence.Models;
 using Innowise.Clinic.Profiles.Persistence.Repositories.Interfaces;
 using Innowise.Clinic.Profiles.Services.DoctorService.Interfaces;
+using Innowise.Clinic.Profiles.Services.FiltrationService.Filters.Abstractions;
 using Innowise.Clinic.Profiles.Services.MappingService;
 using Innowise.Clinic.Profiles.Services.RabbitMqService.RabbitMqPublisher;
 using Innowise.Clinic.Shared.Constants;
@@ -40,10 +41,11 @@ public class DoctorService : IDoctorService
         return doctor.ToInternalClinicProfileDto();
     }
 
-    public async Task<IEnumerable<DoctorPublicInfoDto>> GetListingAsync(int page, int quantity)
+    public async Task<IEnumerable<DoctorPublicInfoDto>> GetListingAsync(int page, int quantity, ICollectionFilter<Doctor> doctorFilter)
     {
+        /*x => x.Status.Name != "Inactive";*/
         var doctorsListing =
-            await _doctorRepository.GetDoctorListingAsync(page, quantity, x => x.Status.Name != "Inactive");
+            await _doctorRepository.GetDoctorListingAsync(page, quantity, doctorFilter.ToFiltrationExpression());
         return doctorsListing.ToPublicProfileDtoListing();
     }
 
