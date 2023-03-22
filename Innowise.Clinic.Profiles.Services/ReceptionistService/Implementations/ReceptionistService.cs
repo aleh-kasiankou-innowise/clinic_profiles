@@ -2,9 +2,9 @@ using Innowise.Clinic.Profiles.Dto.Listing;
 using Innowise.Clinic.Profiles.Dto.Profile.Receptionist;
 using Innowise.Clinic.Profiles.Exceptions;
 using Innowise.Clinic.Profiles.Persistence.Repositories.Interfaces;
-using Innowise.Clinic.Profiles.Services.MappingService;
 using Innowise.Clinic.Profiles.Services.RabbitMqService.RabbitMqPublisher;
 using Innowise.Clinic.Profiles.Services.ReceptionistService.Interfaces;
+using Innowise.Clinic.Profiles.Services.Utilities.MappingService;
 using Innowise.Clinic.Shared.Constants;
 using Innowise.Clinic.Shared.Dto;
 

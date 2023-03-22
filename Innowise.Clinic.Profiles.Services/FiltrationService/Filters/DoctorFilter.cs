@@ -1,6 +1,7 @@
 using System.Linq.Expressions;
 using Innowise.Clinic.Profiles.Persistence.Models;
 using Innowise.Clinic.Profiles.Services.FiltrationService.Filters.Abstractions;
+using Innowise.Clinic.Profiles.Specifications;
 
 namespace Innowise.Clinic.Profiles.Services.FiltrationService.Filters;
 
@@ -9,15 +10,17 @@ public class DoctorFilter : ICollectionFilter<Doctor>
     public string? FullName { get; set; } = null;
     public Guid? SpecializationId { get; set; } = null;
     public Guid? OfficeId { get; set; } = null;
-    
+
     public Expression<Func<Doctor, bool>> ToFiltrationExpression()
     {
         var filtrationExpressions = new List<Expression<Func<Doctor, bool>>>();
 
+        // TODO IMPLEMENT OPEN CLOSED PRINCIPLE (create a separate class for filter key-value pairs and add expressions there)
+
         if (FullName is not null)
         {
-            filtrationExpressions.Add(x =>
-                x.Person.FirstName + " " + (x.Person.MiddleName == null ? "" : x.Person.MiddleName + " ") +
+            filtrationExpressions.Add(x => x.Person.FirstName + " " +
+                (x.Person.MiddleName == null ? "" : x.Person.MiddleName + " ") +
                 x.Person.LastName == FullName);
         }
 
@@ -31,21 +34,7 @@ public class DoctorFilter : ICollectionFilter<Doctor>
             filtrationExpressions.Add(x => x.OfficeId == OfficeId);
         }
 
-        Expression<Func<Doctor, bool>> filtrationExpression = null;
-        var doctorParameter = Expression.Parameter(typeof(Doctor), "x");
-
-        // TODO REPLACE INVOKE WITH MORE SUPPORTED METHODS
-        for (int i = 0; i < filtrationExpressions.Count; i++)
-        {
-            filtrationExpression =
-                i > 0
-                    ? Expression.Lambda<Func<Doctor, bool>>(
-                        Expression.AndAlso(Expression.Invoke(filtrationExpression, doctorParameter),
-                            Expression.Invoke(filtrationExpressions[i], doctorParameter)), doctorParameter)
-                    : filtrationExpressions[i];
-        }
-
-        return filtrationExpression ?? (x => true);
+        var filtrationExpression = filtrationExpressions.Aggregate((first, second) => first.And(second));
+        return filtrationExpression;
     }
 }
-

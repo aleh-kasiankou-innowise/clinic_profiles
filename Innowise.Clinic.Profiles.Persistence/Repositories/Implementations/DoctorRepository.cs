@@ -38,9 +38,6 @@ public class DoctorRepository : IDoctorRepository
     public async Task<IEnumerable<Doctor>> GetDoctorListingAsync(int page, int quantity,
         Expression<Func<Doctor, bool>>? specification = null)
     {
-        // TODO TRY TO SELECT ONLY NECESSARY FIELDS
-        // TODO IMPLEMENT SPECIFICATION PATTERN
-        // USE-CASE - return only active doctors
         var doctorsQueryBase = specification is null
             ? _dbContext.Doctors.AsQueryable()
             : _dbContext.Doctors.Include(x => x.Status)

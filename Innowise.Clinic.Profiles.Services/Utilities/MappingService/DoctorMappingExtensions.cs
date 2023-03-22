@@ -2,7 +2,7 @@ using Innowise.Clinic.Profiles.Dto.Listing;
 using Innowise.Clinic.Profiles.Dto.Profile.Doctor;
 using Innowise.Clinic.Profiles.Persistence.Models;
 
-namespace Innowise.Clinic.Profiles.Services.MappingService;
+namespace Innowise.Clinic.Profiles.Services.Utilities.MappingService;
 
 public static class DoctorMappingExtensions
 {
