@@ -7,7 +7,7 @@ public interface IDoctorRepository
 {
     Task<Doctor> CreateProfileAsync(Doctor doctor);
     Task<Doctor> GetProfileAsync(Guid doctorId);
-    Task<IEnumerable<Doctor>> GetDoctorListingAsync(int page, int quantity, Expression<Func<Doctor, bool>>? expression = null);
+    Task<IEnumerable<Doctor>> GetDoctorListingAsync(int page, int quantity, Expression<Func<Doctor, bool>>? filter = null);
     Task UpdateProfileAsync(Doctor updatedProfile);
     Task<DoctorStatus> GetDoctorStatus(Guid doctorId);
 }

@@ -5,12 +5,14 @@ using Innowise.Clinic.Profiles.Exceptions;
 using Innowise.Clinic.Profiles.Persistence.Models;
 using Innowise.Clinic.Profiles.Persistence.Repositories.Interfaces;
 using Innowise.Clinic.Profiles.Services.DoctorService.Interfaces;
-using Innowise.Clinic.Profiles.Services.FiltrationService.Filters.Abstractions;
+using Innowise.Clinic.Profiles.Services.FiltrationService;
+using Innowise.Clinic.Profiles.Services.FiltrationService.Abstractions;
 using Innowise.Clinic.Profiles.Services.RabbitMqService.RabbitMqPublisher;
 using Innowise.Clinic.Profiles.Services.Utilities.MappingService;
 using Innowise.Clinic.Profiles.Specifications;
 using Innowise.Clinic.Shared.Constants;
 using Innowise.Clinic.Shared.Dto;
+using Microsoft.VisualBasic;
 
 namespace Innowise.Clinic.Profiles.Services.DoctorService.Implementations;
 
@@ -18,11 +20,13 @@ public class DoctorService : IDoctorService
 {
     private readonly IRabbitMqPublisher _rabbitMqPublisher;
     private readonly IDoctorRepository _doctorRepository;
+    private readonly FilterResolver<Doctor> _filterResolver;
 
-    public DoctorService(IDoctorRepository doctorRepository, IRabbitMqPublisher rabbitMqPublisher)
+    public DoctorService(IDoctorRepository doctorRepository, IRabbitMqPublisher rabbitMqPublisher, FilterResolver<Doctor> filterResolver)
     {
         _doctorRepository = doctorRepository;
         _rabbitMqPublisher = rabbitMqPublisher;
+        _filterResolver = filterResolver;
     }
 
     public async Task<Guid> CreateProfileAsync(DoctorProfileDto newProfile)
@@ -43,9 +47,9 @@ public class DoctorService : IDoctorService
     }
 
     public async Task<IEnumerable<DoctorPublicInfoDto>> GetListingAsync(int page, int quantity,
-        ICollectionFilter<Doctor> doctorFilter)
+        ICompoundFilter<Doctor> doctorFilter)
     {
-        var filterWithLimitationToActiveDoctors = doctorFilter.ToFiltrationExpression()
+        var filterWithLimitationToActiveDoctors = _filterResolver.ConvertCompoundFilterToExpression(doctorFilter)
             .And(Doctor.IsActive);
 
         var doctorsListing =
@@ -59,9 +63,11 @@ public class DoctorService : IDoctorService
         return doctor.ToPublicProfileDto();
     }
 
-    public async Task<IEnumerable<DoctorInfoReceptionistDto>> GetListingForReceptionistAsync(int offset, int quantity)
+    public async Task<IEnumerable<DoctorInfoReceptionistDto>> GetListingForReceptionistAsync(int offset, int quantity,
+        CompoundFilter<Doctor> compoundFilter)
     {
-        var doctorListing = await _doctorRepository.GetDoctorListingAsync(offset, quantity);
+        var filter = _filterResolver.ConvertCompoundFilterToExpression(compoundFilter);
+        var doctorListing = await _doctorRepository.GetDoctorListingAsync(offset, quantity, filter);
         return doctorListing.ToReceptionistViewProfileDtoListing();
     }
 

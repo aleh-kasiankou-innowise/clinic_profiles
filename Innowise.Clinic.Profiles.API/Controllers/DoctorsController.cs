@@ -1,7 +1,8 @@
 using Innowise.Clinic.Profiles.Configuration.Options;
 using Innowise.Clinic.Profiles.Dto.Listing;
+using Innowise.Clinic.Profiles.Persistence.Models;
 using Innowise.Clinic.Profiles.Services.DoctorService.Interfaces;
-using Innowise.Clinic.Profiles.Services.FiltrationService.Filters;
+using Innowise.Clinic.Profiles.Services.FiltrationService.Abstractions;
 using Innowise.Clinic.Shared.Constants;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
@@ -21,11 +22,11 @@ public class DoctorsController : ControllerBase
         _paginationConfiguration = paginationConfiguration.Value;
     }
 
-    [HttpGet]
-    public async Task<ActionResult<IEnumerable<DoctorPublicInfoDto>>> GetDoctorsListing([FromQuery] DoctorFilter filter, [FromQuery] int page = 1)
+    [HttpPost]
+    public async Task<ActionResult<IEnumerable<DoctorPublicInfoDto>>> GetDoctorsListing([FromBody] CompoundFilter<Doctor> filter, [FromQuery] int page = 1)
     {
         return Ok(User.IsInRole(UserRoles.Receptionist)
-            ? await _doctorService.GetListingForReceptionistAsync(page, _paginationConfiguration.DoctorsPerPageAdminFrontend)
+            ? await _doctorService.GetListingForReceptionistAsync(page, _paginationConfiguration.DoctorsPerPageAdminFrontend, filter)
             : await _doctorService.GetListingAsync(page, _paginationConfiguration.DoctorsPerPagePublicFrontend, filter));
     }
 

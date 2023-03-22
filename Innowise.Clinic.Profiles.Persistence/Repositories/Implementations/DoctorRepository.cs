@@ -36,12 +36,12 @@ public class DoctorRepository : IDoctorRepository
     }
 
     public async Task<IEnumerable<Doctor>> GetDoctorListingAsync(int page, int quantity,
-        Expression<Func<Doctor, bool>>? specification = null)
+        Expression<Func<Doctor, bool>>? filter = null)
     {
-        var doctorsQueryBase = specification is null
+        var doctorsQueryBase = filter is null
             ? _dbContext.Doctors.AsQueryable()
             : _dbContext.Doctors.Include(x => x.Status)
-                .Where(specification);
+                .Where(filter);
 
         return doctorsQueryBase.Include(x => x.Person)
             .Skip(RepositoryUtilities.CalculateOffset(page, quantity))

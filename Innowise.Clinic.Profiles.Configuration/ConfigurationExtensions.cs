@@ -2,12 +2,15 @@
 using Innowise.Clinic.Profiles.Configuration.Options;
 using Innowise.Clinic.Profiles.Configuration.Swagger.Examples;
 using Innowise.Clinic.Profiles.Persistence;
+using Innowise.Clinic.Profiles.Persistence.Models;
 using Innowise.Clinic.Profiles.Persistence.Repositories.Implementations;
 using Innowise.Clinic.Profiles.Persistence.Repositories.Interfaces;
 using Innowise.Clinic.Profiles.Services.ConsistencyManager.Implementations;
 using Innowise.Clinic.Profiles.Services.ConsistencyManager.Interfaces;
 using Innowise.Clinic.Profiles.Services.DoctorService.Implementations;
 using Innowise.Clinic.Profiles.Services.DoctorService.Interfaces;
+using Innowise.Clinic.Profiles.Services.FiltrationService;
+using Innowise.Clinic.Profiles.Services.FiltrationService.Abstractions;
 using Innowise.Clinic.Profiles.Services.MassTransitService.Consumers;
 using Innowise.Clinic.Profiles.Services.PatientService.Implementations;
 using Innowise.Clinic.Profiles.Services.PatientService.Interfaces;
@@ -87,6 +90,18 @@ public static class ConfigurationExtensions
                 cfg.ConfigureEndpoints(context);
             });
         });
+        return services;
+    }
+
+    public static IServiceCollection ConfigureFilters(this IServiceCollection services)
+    {
+        services.AddSingleton<CompoundFilter<Doctor>>();
+        services.AddSingleton<CompoundFilter<Patient>>();
+        services.AddSingleton<CompoundFilter<Receptionist>>();
+        services.AddSingleton<FilterResolver<Doctor>>();
+        services.AddSingleton<FilterResolver<Patient>>();
+        services.AddSingleton<FilterResolver<Receptionist>>();
+
         return services;
     }
 

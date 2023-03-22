@@ -27,9 +27,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="FiltrationService\Cache" />
-      <Folder Include="FiltrationService\Implementations" />
-      <Folder Include="FiltrationService\Interfaces" />
       <Folder Include="RabbitMqService" />
     </ItemGroup>
 

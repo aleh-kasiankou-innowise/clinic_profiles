@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using Innowise.Clinic.Profiles.Persistence.Models;
 using Innowise.Clinic.Profiles.Persistence.Repositories.Interfaces;
 using Innowise.Clinic.Profiles.Persistence.Utilities;
@@ -29,10 +30,11 @@ public class PatientRepository : IPatientRepository
                    patientId.ToString());
     }
 
-    public async Task<IEnumerable<Patient>> GetPatientListingAsync(int page, int quantity)
+    public async Task<IEnumerable<Patient>> GetPatientListingAsync(int page, int quantity,
+        Expression<Func<Patient, bool>> filter)
     {
         return await _dbContext.Patients
-            .Include(x => x.Person)
+            .Include(x => x.Person).Where(filter)
             .Skip(RepositoryUtilities.CalculateOffset(page, quantity))
             .Take(quantity)
             .ToListAsync();

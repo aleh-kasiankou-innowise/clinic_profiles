@@ -1,6 +1,9 @@
 using Innowise.Clinic.Profiles.Dto.Listing;
 using Innowise.Clinic.Profiles.Dto.Profile.Patient;
+using Innowise.Clinic.Profiles.Persistence.Models;
 using Innowise.Clinic.Profiles.Persistence.Repositories.Interfaces;
+using Innowise.Clinic.Profiles.Services.FiltrationService;
+using Innowise.Clinic.Profiles.Services.FiltrationService.Abstractions;
 using Innowise.Clinic.Profiles.Services.PatientService.Interfaces;
 using Innowise.Clinic.Profiles.Services.Utilities.MappingService;
 using Innowise.Clinic.Shared.MassTransit.MessageTypes.Events;
@@ -12,11 +15,13 @@ public class PatientService : IPatientService
 {
     private readonly IPatientRepository _patientRepository;
     private readonly IBus _bus;
+    private readonly FilterResolver<Patient> _filterResolver;
 
-    public PatientService(IPatientRepository patientRepository, IBus bus)
+    public PatientService(IPatientRepository patientRepository, IBus bus, FilterResolver<Patient> filterResolver)
     {
         _patientRepository = patientRepository;
         _bus = bus;
+        _filterResolver = filterResolver;
     }
 
     public async Task<Guid> CreateProfileAsync(PatientProfileDto newProfile)
@@ -40,9 +45,11 @@ public class PatientService : IPatientService
         return patient.ToPatientProfileDto();
     }
 
-    public async Task<IEnumerable<PatientInfoDto>> GetPatientListingAsync(int page, int quantity)
+    public async Task<IEnumerable<PatientInfoDto>> GetPatientListingAsync(int page, int quantity,
+        CompoundFilter<Patient> compoundFilter)
     {
-        var patientListing = await _patientRepository.GetPatientListingAsync(page, quantity);
+        var filter = _filterResolver.ConvertCompoundFilterToExpression(compoundFilter);
+        var patientListing = await _patientRepository.GetPatientListingAsync(page, quantity, filter);
         return patientListing.ToPatientInfoDtoListing();
     }
 

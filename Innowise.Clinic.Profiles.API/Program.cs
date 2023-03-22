@@ -10,6 +10,7 @@ builder.Services.ConfigureSwagger();
 builder.Services.ConfigureProfileRepositories(builder.Configuration);
 builder.Services.ConfigureCrossServiceCommunication(builder.Configuration);
 builder.Services.ConfigureProfileServices(builder.Configuration);
+builder.Services.ConfigureFilters();
 builder.Services.AddSingleton<ExceptionHandlingMiddleware>();
 
 var app = builder.Build();

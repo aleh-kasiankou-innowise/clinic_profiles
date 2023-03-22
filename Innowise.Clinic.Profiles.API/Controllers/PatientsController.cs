@@ -1,5 +1,7 @@
 using Innowise.Clinic.Profiles.Configuration.Options;
 using Innowise.Clinic.Profiles.Dto.Listing;
+using Innowise.Clinic.Profiles.Persistence.Models;
+using Innowise.Clinic.Profiles.Services.FiltrationService.Abstractions;
 using Innowise.Clinic.Profiles.Services.PatientService.Interfaces;
 using Innowise.Clinic.Shared.Constants;
 using Microsoft.AspNetCore.Authorization;
@@ -21,12 +23,11 @@ public class PatientsController : ControllerBase
         _paginationConfiguration = paginationConfiguration.Value;
     }
 
-    [HttpGet]
+    [HttpPost]
     [Authorize(Roles = $"{UserRoles.Receptionist},{UserRoles.Doctor}")]
-    public async Task<ActionResult<IEnumerable<PatientInfoDto>>> GetPatientListing([FromQuery] int page)
+    public async Task<ActionResult<IEnumerable<PatientInfoDto>>> GetPatientListing([FromBody] CompoundFilter<Patient> compoundFilter, [FromQuery] int page)
     {
-        // TODO ADD Search By Name feature
         var quantity = _paginationConfiguration.PatientsPerPageAdminFrontend;
-        return Ok(await _patientService.GetPatientListingAsync(page, quantity));
+        return Ok(await _patientService.GetPatientListingAsync(page, quantity, compoundFilter));
     }
 }
