@@ -6,13 +6,13 @@ using Innowise.Clinic.Profiles.Persistence.Models;
 using Innowise.Clinic.Profiles.Persistence.Repositories.Interfaces;
 using Innowise.Clinic.Profiles.Services.DoctorService.Interfaces;
 using Innowise.Clinic.Profiles.Services.FiltrationService;
-using Innowise.Clinic.Profiles.Services.FiltrationService.Abstractions;
 using Innowise.Clinic.Profiles.Services.RabbitMqService.RabbitMqPublisher;
 using Innowise.Clinic.Profiles.Services.Utilities.MappingService;
 using Innowise.Clinic.Profiles.Specifications;
 using Innowise.Clinic.Shared.Constants;
 using Innowise.Clinic.Shared.Dto;
-using Microsoft.VisualBasic;
+using Innowise.Clinic.Shared.Services.FiltrationService;
+using Innowise.Clinic.Shared.Services.FiltrationService.Abstractions;
 
 namespace Innowise.Clinic.Profiles.Services.DoctorService.Implementations;
 

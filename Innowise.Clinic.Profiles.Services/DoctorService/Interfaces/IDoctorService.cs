@@ -1,7 +1,7 @@
 using Innowise.Clinic.Profiles.Dto.Listing;
 using Innowise.Clinic.Profiles.Dto.Profile.Doctor;
 using Innowise.Clinic.Profiles.Persistence.Models;
-using Innowise.Clinic.Profiles.Services.FiltrationService.Abstractions;
+using Innowise.Clinic.Shared.Services.FiltrationService.Abstractions;
 
 namespace Innowise.Clinic.Profiles.Services.DoctorService.Interfaces;
 

@@ -3,10 +3,11 @@ using Innowise.Clinic.Profiles.Dto.Profile.Patient;
 using Innowise.Clinic.Profiles.Persistence.Models;
 using Innowise.Clinic.Profiles.Persistence.Repositories.Interfaces;
 using Innowise.Clinic.Profiles.Services.FiltrationService;
-using Innowise.Clinic.Profiles.Services.FiltrationService.Abstractions;
 using Innowise.Clinic.Profiles.Services.PatientService.Interfaces;
 using Innowise.Clinic.Profiles.Services.Utilities.MappingService;
 using Innowise.Clinic.Shared.MassTransit.MessageTypes.Events;
+using Innowise.Clinic.Shared.Services.FiltrationService;
+using Innowise.Clinic.Shared.Services.FiltrationService.Abstractions;
 using MassTransit;
 
 namespace Innowise.Clinic.Profiles.Services.PatientService.Implementations;

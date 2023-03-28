@@ -2,8 +2,8 @@ using Innowise.Clinic.Profiles.Configuration.Options;
 using Innowise.Clinic.Profiles.Dto.Listing;
 using Innowise.Clinic.Profiles.Persistence.Models;
 using Innowise.Clinic.Profiles.Services.DoctorService.Interfaces;
-using Innowise.Clinic.Profiles.Services.FiltrationService.Abstractions;
 using Innowise.Clinic.Shared.Constants;
+using Innowise.Clinic.Shared.Services.FiltrationService.Abstractions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 
