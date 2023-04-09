@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
 namespace Innowise.Clinic.Profiles.Dto.Profile.Patient;
-
+// TODO USE IFORMFILE INSTEAD OF BYTES
 [JsonPolymorphic]
 [JsonDerivedType(typeof(PatientProfileDto), "base")]
 [JsonDerivedType(typeof(PatientProfileWithNumberAndPhotoDto), "withNumberAndPhoto")]

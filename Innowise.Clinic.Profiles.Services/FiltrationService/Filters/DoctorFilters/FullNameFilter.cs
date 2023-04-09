@@ -9,14 +9,10 @@ namespace Innowise.Clinic.Profiles.Services.FiltrationService.Filters.DoctorFilt
 [FilterKey("name")]
 public class FullNameFilter : EntityFilter<Doctor>
 {
-    public override Expression<Func<Doctor, bool>> ToExpression()
+    public override Expression<Func<Doctor, bool>> ToExpression(string value)
     {
         return x => x.Person.FirstName + " " +
             (x.Person.MiddleName == null ? "" : x.Person.MiddleName + " ") +
-            x.Person.LastName == Value;
-    }
-
-    public FullNameFilter(string value) : base(value)
-    {
+            x.Person.LastName == value;
     }
 }

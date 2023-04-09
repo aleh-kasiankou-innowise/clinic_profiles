@@ -8,13 +8,9 @@ namespace Innowise.Clinic.Profiles.Services.FiltrationService.Filters.DoctorFilt
 [FilterKey("specialization")]
 public class SpecializationFilter : EntityFilter<Doctor>
 {
-    public SpecializationFilter(string value) : base(value)
-    {
-    }
-
-    public override Expression<Func<Doctor, bool>> ToExpression()
+    public override Expression<Func<Doctor, bool>> ToExpression(string value)
     {
         // TODO NOTIFY USER IF GUID IS INCORRECT
-        return x => x.SpecializationId == Guid.Parse(Value);
+        return x => x.SpecializationId == Guid.Parse(value);
     }
 }

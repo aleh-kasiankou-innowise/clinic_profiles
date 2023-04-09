@@ -11,8 +11,10 @@ using Innowise.Clinic.Profiles.Services.Utilities.MappingService;
 using Innowise.Clinic.Profiles.Specifications;
 using Innowise.Clinic.Shared.Constants;
 using Innowise.Clinic.Shared.Dto;
+using Innowise.Clinic.Shared.MassTransit.MessageTypes.Events;
 using Innowise.Clinic.Shared.Services.FiltrationService;
 using Innowise.Clinic.Shared.Services.FiltrationService.Abstractions;
+using MassTransit;
 
 namespace Innowise.Clinic.Profiles.Services.DoctorService.Implementations;
 
@@ -21,22 +23,24 @@ public class DoctorService : IDoctorService
     private readonly IRabbitMqPublisher _rabbitMqPublisher;
     private readonly IDoctorRepository _doctorRepository;
     private readonly FilterResolver<Doctor> _filterResolver;
+    private readonly IBus _bus;
 
-    public DoctorService(IDoctorRepository doctorRepository, IRabbitMqPublisher rabbitMqPublisher, FilterResolver<Doctor> filterResolver)
+    public DoctorService(IDoctorRepository doctorRepository, IRabbitMqPublisher rabbitMqPublisher,
+        FilterResolver<Doctor> filterResolver, IBus bus)
     {
         _doctorRepository = doctorRepository;
         _rabbitMqPublisher = rabbitMqPublisher;
         _filterResolver = filterResolver;
+        _bus = bus;
     }
 
     public async Task<Guid> CreateProfileAsync(DoctorProfileDto newProfile)
     {
         var newDoctor = newProfile.CreateNewDoctorEntity();
         await _doctorRepository.CreateProfileAsync(newDoctor);
-
-        var userCreationRequest =
-            new AccountGenerationDto(newDoctor.Person.PersonId, UserRoles.Doctor, newDoctor.Email);
-        _rabbitMqPublisher.SendAccountGenerationTask(userCreationRequest);
+        _rabbitMqPublisher.SendAccountGenerationTask(new(newDoctor.Person.PersonId, UserRoles.Doctor, newDoctor.Email));
+        await _bus.Publish<DoctorAddedOrUpdatedMessage>(new(newDoctor.DoctorId, newDoctor.SpecializationId,
+            newDoctor.OfficeId));
         return newDoctor.Person.PersonId;
     }
 
@@ -75,9 +79,10 @@ public class DoctorService : IDoctorService
     {
         var doctor = await _doctorRepository.GetProfileAsync(doctorId);
         doctor.UpdateProfile(updatedProfile);
-
         await UpdateStatusAsyncWithoutSaving(doctor, updatedProfile.StatusId);
         await _doctorRepository.UpdateProfileAsync(doctor);
+        await _bus.Publish<DoctorAddedOrUpdatedMessage>(new(doctor.DoctorId, doctor.SpecializationId,
+            doctor.OfficeId));
     }
 
     public async Task UpdateStatusAsync(Guid doctorId, Guid newStatusId)

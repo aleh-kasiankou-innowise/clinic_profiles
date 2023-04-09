@@ -3,6 +3,8 @@ using System.Text.Json.Serialization;
 
 namespace Innowise.Clinic.Profiles.Dto.Profile.Doctor;
 
+// TODO MAKE MIDDLE NAME OPTIONAL
+
 [JsonPolymorphic]
 [JsonDerivedType(typeof(DoctorProfileStatusDto), "base")]
 [JsonDerivedType(typeof(DoctorProfileUpdateDto), "update")]
