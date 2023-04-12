@@ -1,5 +1,4 @@
 using System.Linq.Expressions;
-using System.Text;
 using Innowise.Clinic.Profiles.Persistence.Models;
 using Innowise.Clinic.Shared.Services.FiltrationService.Abstractions;
 using Innowise.Clinic.Shared.Services.FiltrationService.Attributes;

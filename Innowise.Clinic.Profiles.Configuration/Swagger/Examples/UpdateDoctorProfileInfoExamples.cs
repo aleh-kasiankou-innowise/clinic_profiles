@@ -8,7 +8,7 @@ public class UpdateDoctorProfileInfoExamples : IMultipleExamplesProvider<DoctorP
     public IEnumerable<SwaggerExample<DoctorProfileStatusDto>> GetExamples()
     {
         DoctorProfileStatusDto patientProfileWithNumberAndPhotoDto = new DoctorProfileUpdateDto(
-            "photo"u8.ToArray(),
+            null,
             "James", "Sullivan", "Jose",
             new DateTime(1990, 2, 15),
             Guid.Empty, Guid.Empty,

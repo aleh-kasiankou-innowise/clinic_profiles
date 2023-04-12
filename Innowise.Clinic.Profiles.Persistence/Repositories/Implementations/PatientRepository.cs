@@ -46,11 +46,8 @@ public class PatientRepository : IPatientRepository
         await _dbContext.SaveChangesAsync();
     }
 
-    public async Task DeleteProfileAsync(Guid patientId)
+    public async Task DeleteProfileAsync(Patient patient)
     {
-        var patient = await _dbContext.Patients.SingleOrDefaultAsync(x => x.Person.PersonId == patientId) ??
-                      throw new EntityNotFoundException(nameof(Patient), nameof(Patient.PersonId),
-                          patientId.ToString());
         _dbContext.Patients.Remove(patient);
         await _dbContext.SaveChangesAsync();
     }

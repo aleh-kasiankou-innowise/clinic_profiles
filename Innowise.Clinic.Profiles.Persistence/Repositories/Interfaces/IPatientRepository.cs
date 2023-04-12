@@ -10,5 +10,5 @@ public interface IPatientRepository
     Task<IEnumerable<Patient>> GetPatientListingAsync(int page, int quantity,
         Expression<Func<Patient, bool>> expression);
     Task UpdateProfileAsync(Patient updatedProfile);
-    Task DeleteProfileAsync(Guid patientId);
+    Task DeleteProfileAsync(Patient patient);
 }

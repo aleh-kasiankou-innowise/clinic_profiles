@@ -10,7 +10,7 @@ public record DoctorInfoBaseDto(Guid DoctorId, string FirstName, string LastName
     Guid SpecializationId, Guid OfficeId);
 
 public record DoctorPublicInfoDto(Guid DoctorId, string FirstName, string LastName, string? MiddleName,
-    Guid SpecializationId, Guid OfficeId, [Required] DateTime CareerStartYear, byte[]? Photo) : DoctorInfoBaseDto(
+    Guid SpecializationId, Guid OfficeId, [Required] DateTime CareerStartYear, string? Photo) : DoctorInfoBaseDto(
     DoctorId,
     FirstName, LastName, MiddleName,
     SpecializationId, OfficeId);

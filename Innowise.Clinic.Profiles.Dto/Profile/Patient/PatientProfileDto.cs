@@ -1,36 +1,40 @@
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.Http;
 
 namespace Innowise.Clinic.Profiles.Dto.Profile.Patient;
-// TODO USE IFORMFILE INSTEAD OF BYTES
+
 [JsonPolymorphic]
 [JsonDerivedType(typeof(PatientProfileDto), "base")]
 [JsonDerivedType(typeof(PatientProfileWithNumberAndPhotoDto), "withNumberAndPhoto")]
-
 public record PatientProfileDto([Required] string FirstName, [Required] string LastName,
     string? MiddleName, DateTime DateOfBirth);
 
 public record PatientProfileWithNumberAndPhotoDto : PatientProfileDto
 {
-    public PatientProfileWithNumberAndPhotoDto(string FirstName, string LastName,
-        string? MiddleName, DateTime DateOfBirth, string? PhoneNumber, byte[]? Photo) : base(FirstName, LastName,
-        MiddleName, DateOfBirth)
+    public PatientProfileWithNumberAndPhotoDto(string firstName, string lastName,
+        string? middleName, DateTime dateOfBirth, string? phoneNumber, IFormFile? photo, bool isToDeletePhoto = false) : base(firstName, lastName,
+        middleName, dateOfBirth)
     {
-        this.PhoneNumber = PhoneNumber;
-        this.Photo = Photo;
+        this.PhoneNumber = phoneNumber;
+        this.Photo = photo;
+        this.IsToDeletePhoto = isToDeletePhoto;
     }
 
     [JsonPropertyName("$type")] public string JsonDiscriminator { get; } = "withNumberAndPhoto";
     public string? PhoneNumber { get; init; }
-    public byte[]? Photo { get; init; }
+    public IFormFile? Photo { get; init; }
+    public bool IsToDeletePhoto { get; set; } = false;
 
-    public void Deconstruct(out string FirstName, out string LastName, out string? MiddleName, out DateTime DateOfBirth, out string? PhoneNumber, out byte[]? Photo)
+    public void Deconstruct(out string firstName, out string lastName, out string? middleName, out DateTime dateOfBirth,
+        out string? phoneNumber, IFormFile? photo, bool isToDeletePhoto = false)
     {
-        FirstName = this.FirstName;
-        LastName = this.LastName;
-        MiddleName = this.MiddleName;
-        DateOfBirth = this.DateOfBirth;
-        PhoneNumber = this.PhoneNumber;
-        Photo = this.Photo;
+        firstName = this.FirstName;
+        lastName = this.LastName;
+        middleName = this.MiddleName;
+        dateOfBirth = this.DateOfBirth;
+        phoneNumber = this.PhoneNumber;
+        photo = this.Photo;
+        isToDeletePhoto = this.IsToDeletePhoto;
     }
 }

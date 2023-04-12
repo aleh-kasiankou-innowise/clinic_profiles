@@ -29,7 +29,8 @@ public class DoctorRepository : IDoctorRepository
         var doctor = await _dbContext.Doctors
             .Include(x => x.Person)
             .Include(x => x.Specialization)
-            .SingleOrDefaultAsync(x => x.DoctorId == doctorId);
+            .Include(x => x.Status)
+            .SingleOrDefaultAsync(x => x.Person.PersonId == doctorId);
         return doctor ??
                throw new EntityNotFoundException(nameof(Doctor), nameof(Doctor.PersonId),
                    doctorId.ToString());

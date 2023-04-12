@@ -1,4 +1,5 @@
 using Innowise.Clinic.Profiles.Dto.Profile.Patient;
+using Microsoft.AspNetCore.Http;
 using Swashbuckle.AspNetCore.Filters;
 
 namespace Innowise.Clinic.Profiles.Configuration.Swagger.Examples;
@@ -14,7 +15,7 @@ public class CreatePatientProfileExamples : IMultipleExamplesProvider<PatientPro
         PatientProfileDto patientProfileWithNumberAndPhotoDto = new PatientProfileWithNumberAndPhotoDto("John", "Doe",
             "Mariano",
             new DateTime(1990, 2, 15),
-            "8-800-555-35-35", "photo"u8.ToArray());
+            "8-800-555-35-35", null);
         yield return SwaggerExample.Create("Create Profile by Patient",
             patientProfileWithNumberAndPhotoDto);
     }

@@ -6,14 +6,14 @@ namespace Innowise.Clinic.Profiles.Services.Utilities.MappingService;
 
 public static class DoctorMappingExtensions
 {
-    public static Doctor CreateNewDoctorEntity(this DoctorProfileDto doctorProfileDto)
+    public static Doctor CreateNewDoctorEntity(this DoctorProfileDto doctorProfileDto, string? photo)
     {
         var newPerson = new Person
         {
             FirstName = doctorProfileDto.FirstName,
             LastName = doctorProfileDto.LastName,
             MiddleName = doctorProfileDto.MiddleName,
-            Photo = doctorProfileDto.Photo
+            Photo = photo
         };
 
         var newDoctor = new Doctor
@@ -73,13 +73,13 @@ public static class DoctorMappingExtensions
                 d.SpecializationId, d.OfficeId, d.StatusId));
     }
 
-    public static Doctor UpdateProfile(this Doctor doctor, DoctorProfileUpdateDto updatedProfile)
+    public static Doctor UpdateProfile(this Doctor doctor, DoctorProfileUpdateDto updatedProfile, string? photo)
     {
         doctor.Person.FirstName = updatedProfile.FirstName;
         doctor.Person.LastName = updatedProfile.LastName;
         doctor.Person.MiddleName = updatedProfile.MiddleName;
         doctor.DateOfBirth = updatedProfile.DateOfBirth;
-        doctor.Person.Photo = updatedProfile.Photo;
+        doctor.Person.Photo = photo;
         doctor.SpecializationId = updatedProfile.SpecializationId;
         doctor.CareerStartYear = updatedProfile.CareerStartYear;
 

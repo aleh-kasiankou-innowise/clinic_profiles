@@ -2,6 +2,7 @@ using Innowise.Clinic.Profiles.Dto.Listing;
 using Innowise.Clinic.Profiles.Dto.Profile.Receptionist;
 using Innowise.Clinic.Profiles.Exceptions;
 using Innowise.Clinic.Profiles.Persistence.Repositories.Interfaces;
+using Innowise.Clinic.Profiles.Services.BlobService.Interfaces;
 using Innowise.Clinic.Profiles.Services.RabbitMqService.RabbitMqPublisher;
 using Innowise.Clinic.Profiles.Services.ReceptionistService.Interfaces;
 using Innowise.Clinic.Profiles.Services.Utilities.MappingService;
@@ -14,17 +15,20 @@ public class ReceptionistService : IReceptionistService
 {
     private readonly IRabbitMqPublisher _authenticationServiceConnection;
     private readonly IReceptionistRepository _receptionistRepository;
+    private readonly IBlobService _blobService;
 
     public ReceptionistService(IRabbitMqPublisher authenticationServiceConnection,
-        IReceptionistRepository receptionistRepository)
+        IReceptionistRepository receptionistRepository, IBlobService blobService)
     {
         _authenticationServiceConnection = authenticationServiceConnection;
         _receptionistRepository = receptionistRepository;
+        _blobService = blobService;
     }
 
     public async Task<Guid> CreateProfileAsync(CreateReceptionistProfileDto newProfile)
     {
-        var newReceptionist = newProfile.CreateNewProfile();
+        var photoUrl = await _blobService.UploadPhotoAsync(newProfile.Photo);
+        var newReceptionist = newProfile.CreateNewProfile(photoUrl);
         await _receptionistRepository.CreateProfileAsync(newReceptionist);
         var userCreationRequest =
             new AccountGenerationDto(newReceptionist.Person.PersonId, UserRoles.Receptionist, newReceptionist.Email);
@@ -48,12 +52,12 @@ public class ReceptionistService : IReceptionistService
     public async Task UpdateProfileAsync(Guid receptionistId, EditReceptionistProfileDto updatedProfile)
     {
         var receptionist = await _receptionistRepository.GetProfileAsync(receptionistId);
-
+        var photoUrl = await HandlePhotoUpdate(receptionist.Person.Photo, updatedProfile);
         receptionist.OfficeId = updatedProfile.OfficeId;
         receptionist.Person.FirstName = updatedProfile.FirstName;
         receptionist.Person.LastName = updatedProfile.LastName;
         receptionist.Person.MiddleName = updatedProfile.MiddleName;
-        receptionist.Person.Photo = updatedProfile.Photo;
+        receptionist.Person.Photo = photoUrl;
     }
 
     public async Task DeleteProfileAsync(Guid receptionistId)
@@ -68,5 +72,30 @@ public class ReceptionistService : IReceptionistService
         {
             throw new InconsistentDataException("The receptionist is not linked to the account.");
         }
+    }
+    
+    private async Task<string?> HandlePhotoUpdate(string? savedPhoto, EditReceptionistProfileDto updatedProfile)
+    {
+        var photoUrl = savedPhoto;
+
+        if (updatedProfile.IsToDeletePhoto && savedPhoto is not null)
+        {
+            await _blobService.DeletePhotoAsync(savedPhoto);
+            photoUrl = null;
+        }
+
+        else if (updatedProfile is { IsToDeletePhoto: false, Photo: not null })
+        {
+            if (savedPhoto is null)
+            {
+                photoUrl = await _blobService.UploadPhotoAsync(updatedProfile.Photo);
+            }
+            else
+            {
+                await _blobService.UpdatePhotoAsync(updatedProfile.Photo, savedPhoto);
+            }
+        }
+
+        return photoUrl;
     }
 }

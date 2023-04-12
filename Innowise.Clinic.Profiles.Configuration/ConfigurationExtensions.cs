@@ -5,11 +5,12 @@ using Innowise.Clinic.Profiles.Persistence;
 using Innowise.Clinic.Profiles.Persistence.Models;
 using Innowise.Clinic.Profiles.Persistence.Repositories.Implementations;
 using Innowise.Clinic.Profiles.Persistence.Repositories.Interfaces;
+using Innowise.Clinic.Profiles.Services.BlobService.Implementations;
+using Innowise.Clinic.Profiles.Services.BlobService.Interfaces;
 using Innowise.Clinic.Profiles.Services.ConsistencyManager.Implementations;
 using Innowise.Clinic.Profiles.Services.ConsistencyManager.Interfaces;
 using Innowise.Clinic.Profiles.Services.DoctorService.Implementations;
 using Innowise.Clinic.Profiles.Services.DoctorService.Interfaces;
-using Innowise.Clinic.Profiles.Services.FiltrationService;
 using Innowise.Clinic.Profiles.Services.MassTransitService.Consumers;
 using Innowise.Clinic.Profiles.Services.PatientService.Implementations;
 using Innowise.Clinic.Profiles.Services.PatientService.Interfaces;
@@ -113,6 +114,7 @@ public static class ConfigurationExtensions
             opt.UseSqlServer(configuration.GetConnectionString("Default")));
         services.AddScoped<IPatientRepository, PatientRepository>();
         services.AddScoped<IDoctorRepository, DoctorRepository>();
+        services.AddScoped<IReceptionistRepository, ReceptionistRepository>();
         return services;
     }
 
@@ -120,6 +122,7 @@ public static class ConfigurationExtensions
         IConfiguration configuration)
     {
         services.Configure<PaginationConfiguration>(configuration.GetSection("PaginationConfiguration"));
+        services.AddScoped<IBlobService, BlobService>();
         services.AddScoped<IPatientService, PatientService>();
         services.AddScoped<IDoctorService, DoctorService>();
         services.AddScoped<IReceptionistService, ReceptionistService>();

@@ -24,11 +24,11 @@ public static class PatientMappingExtensions
         return newPatientProfile;
     }
 
-    public static Patient CreateNewPatientEntity(this PatientProfileWithNumberAndPhotoDto newProfile, Guid associatedUserId)
+    public static Patient CreateNewPatientEntity(this PatientProfileWithNumberAndPhotoDto newProfile, Guid associatedUserId, string? photo)
     {
         var newPerson = new Person
         {
-            Photo = newProfile.Photo,
+            Photo = photo,
             FirstName = newProfile.FirstName,
             LastName = newProfile.LastName,
             MiddleName = newProfile.MiddleName,
@@ -51,12 +51,12 @@ public static class PatientMappingExtensions
             new PatientInfoDto(x.PersonId, x.Person.FirstName, x.Person.LastName, x.PhoneNumber, x.Person.MiddleName));
     }
 
-    public static Patient UpdateProfile(this Patient patient, PatientProfileWithNumberAndPhotoDto updatedProfile)
+    public static Patient UpdateProfile(this Patient patient, PatientProfileWithNumberAndPhotoDto updatedProfile, string? photo)
     {
         patient.Person.FirstName = updatedProfile.FirstName;
         patient.Person.LastName = updatedProfile.LastName;
         patient.Person.MiddleName = updatedProfile.MiddleName;
-        patient.Person.Photo = updatedProfile.Photo ?? patient.Person.Photo;
+        patient.Person.Photo = photo;
         patient.DateOfBirth = updatedProfile.DateOfBirth;
         patient.PhoneNumber = updatedProfile.PhoneNumber;
         return patient;

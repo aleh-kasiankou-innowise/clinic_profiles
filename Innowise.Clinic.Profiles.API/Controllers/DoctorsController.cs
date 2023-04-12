@@ -22,7 +22,6 @@ public class DoctorsController : ControllerBase
         _paginationConfiguration = paginationConfiguration.Value;
     }
 
-    // TODO FIX NON-NULLABLE PAGINATION
     [HttpPost]
     public async Task<ActionResult<IEnumerable<DoctorPublicInfoDto>>> GetDoctorsListing([FromBody] CompoundFilter<Doctor> filter, [FromQuery] int page = 1)
     {

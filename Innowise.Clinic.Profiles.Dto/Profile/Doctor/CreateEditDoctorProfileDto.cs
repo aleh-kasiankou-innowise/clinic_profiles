@@ -1,9 +1,8 @@
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.Http;
 
 namespace Innowise.Clinic.Profiles.Dto.Profile.Doctor;
-
-// TODO MAKE MIDDLE NAME OPTIONAL
 
 [JsonPolymorphic]
 [JsonDerivedType(typeof(DoctorProfileStatusDto), "base")]
@@ -27,10 +26,10 @@ public record DoctorProfileStatusDto
 
 public record DoctorProfileUpdateDto : DoctorProfileStatusDto
 {
-    public DoctorProfileUpdateDto(byte[]? Photo, [Required] string FirstName, [Required] string LastName,
-        string MiddleName, DateTime DateOfBirth,
+    public DoctorProfileUpdateDto(IFormFile? Photo, [Required] string FirstName, [Required] string LastName,
+        string? MiddleName, DateTime DateOfBirth,
         Guid SpecializationId, Guid OfficeId, DateTime CareerStartYear,
-        Guid StatusId) : base(StatusId)
+        Guid StatusId, bool isToDeletePhoto = false) : base(StatusId)
     {
         this.Photo = Photo;
         this.FirstName = FirstName;
@@ -40,21 +39,23 @@ public record DoctorProfileUpdateDto : DoctorProfileStatusDto
         this.SpecializationId = SpecializationId;
         this.OfficeId = OfficeId;
         this.CareerStartYear = CareerStartYear;
+        this.IsToDeletePhoto = isToDeletePhoto;
     }
 
     [JsonPropertyName("$type")] public new string JsonDiscriminator => "update";
-    public byte[]? Photo { get; init; }
+    public IFormFile? Photo { get; init; }
+    public bool IsToDeletePhoto { get; set; }
     public string FirstName { get; init; }
     public string LastName { get; init; }
-    public string MiddleName { get; init; }
+    public string? MiddleName { get; init; }
     public DateTime DateOfBirth { get; init; }
     public Guid SpecializationId { get; init; }
     public Guid OfficeId { get; init; }
     public DateTime CareerStartYear { get; init; }
 
-    public void Deconstruct(out byte[]? photo, [Required] out string firstName, [Required] out string lastName,
-        out string middleName, out DateTime dateOfBirth, out Guid specializationId, out Guid officeId,
-        out DateTime careerStartYear, out Guid statusId)
+    public void Deconstruct(out IFormFile? photo, [Required] out string firstName, [Required] out string lastName,
+        out string? middleName, out DateTime dateOfBirth, out Guid specializationId, out Guid officeId,
+        out DateTime careerStartYear, out Guid statusId, bool isToDeletePhoto = false)
     {
         photo = Photo;
         firstName = FirstName;
@@ -65,13 +66,14 @@ public record DoctorProfileUpdateDto : DoctorProfileStatusDto
         officeId = OfficeId;
         careerStartYear = CareerStartYear;
         statusId = StatusId;
+        isToDeletePhoto = IsToDeletePhoto;
     }
 }
 
 public record DoctorProfileDto : DoctorProfileUpdateDto
 {
-    public DoctorProfileDto(byte[]? Photo, [Required] string FirstName, [Required] string LastName,
-        string MiddleName, DateTime DateOfBirth,
+    public DoctorProfileDto(IFormFile? Photo, [Required] string FirstName, [Required] string LastName,
+        string? MiddleName, DateTime DateOfBirth,
         [Required] [EmailAddress] string Email, Guid SpecializationId, Guid OfficeId, DateTime CareerStartYear,
         Guid StatusId) : base(Photo, FirstName, LastName, MiddleName, DateOfBirth, SpecializationId,
         OfficeId, CareerStartYear, StatusId)
@@ -82,8 +84,8 @@ public record DoctorProfileDto : DoctorProfileUpdateDto
     [JsonPropertyName("$type")] public new string JsonDiscriminator => "create";
     public string Email { get; init; }
 
-    public void Deconstruct(out byte[]? photo, [Required] out string firstName, [Required] out string lastName,
-        out string middleName, out DateTime dateOfBirth,
+    public void Deconstruct(out IFormFile? photo, [Required] out string firstName, [Required] out string lastName,
+        out string? middleName, out DateTime dateOfBirth,
         [Required] [EmailAddress] out string email, out Guid specializationId, out Guid officeId,
         out DateTime careerStartYear, out Guid statusId)
     {

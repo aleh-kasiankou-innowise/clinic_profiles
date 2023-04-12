@@ -34,7 +34,7 @@ public class PatientProfilesController : ControllerBase
     [Authorize(Roles = $"{UserRoles.Receptionist},{UserRoles.Patient}")]
     [SwaggerRequestExample(typeof(PatientProfileDto), typeof(CreatePatientProfileExamples))]
     public async Task<ActionResult<Guid>> CreatePatientProfile(
-        [FromBody] PatientProfileDto newPatient)
+        [FromForm] PatientProfileDto newPatient)
     {
         // TODO ADD LOGIC FOR SEARCHING UNLINKED PROFILES FIRST
         if (User.IsInRole(UserRoles.Receptionist))
@@ -54,7 +54,7 @@ public class PatientProfilesController : ControllerBase
     [Authorize(Roles = $"{UserRoles.Receptionist},{UserRoles.Patient}")]
     [AllowInteractionWithOwnProfileOnlyFilter(UserRoles.Patient)]
     public async Task<IActionResult> EditPatientProfile([FromRoute] Guid id,
-        [FromBody] PatientProfileWithNumberAndPhotoDto updatedPatient)
+        [FromForm] PatientProfileWithNumberAndPhotoDto updatedPatient)
     {
         await _patientService.UpdateProfileAsync(id, updatedPatient);
         return Ok();

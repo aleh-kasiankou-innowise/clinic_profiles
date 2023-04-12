@@ -6,14 +6,14 @@ namespace Innowise.Clinic.Profiles.Services.Utilities.MappingService;
 
 public static class ReceptionistMappingService
 {
-    public static Receptionist CreateNewProfile(this CreateReceptionistProfileDto newProfile)
+    public static Receptionist CreateNewProfile(this CreateReceptionistProfileDto newProfile, string? photo)
     {
         var newPerson = new Person
         {
             FirstName = newProfile.FirstName,
             LastName = newProfile.LastName,
             MiddleName = newProfile.MiddleName,
-            Photo = newProfile.Photo
+            Photo = photo
         };
 
         var newReceptionist = new Receptionist
