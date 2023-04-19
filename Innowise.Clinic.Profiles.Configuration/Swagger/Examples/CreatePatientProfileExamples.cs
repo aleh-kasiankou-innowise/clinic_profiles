@@ -1,5 +1,4 @@
 using Innowise.Clinic.Profiles.Dto.Profile.Patient;
-using Microsoft.AspNetCore.Http;
 using Swashbuckle.AspNetCore.Filters;
 
 namespace Innowise.Clinic.Profiles.Configuration.Swagger.Examples;

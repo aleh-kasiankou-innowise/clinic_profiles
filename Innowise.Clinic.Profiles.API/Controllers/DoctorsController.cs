@@ -2,6 +2,7 @@ using Innowise.Clinic.Profiles.Configuration.Options;
 using Innowise.Clinic.Profiles.Dto.Listing;
 using Innowise.Clinic.Profiles.Persistence.Models;
 using Innowise.Clinic.Profiles.Services.DoctorService.Interfaces;
+using Innowise.Clinic.Shared.BaseClasses;
 using Innowise.Clinic.Shared.Constants;
 using Innowise.Clinic.Shared.Services.FiltrationService.Abstractions;
 using Microsoft.AspNetCore.Mvc;
@@ -9,9 +10,7 @@ using Microsoft.Extensions.Options;
 
 namespace Innowise.Clinic.Profiles.API.Controllers;
 
-[ApiController]
-[Route("[controller]")]
-public class DoctorsController : ControllerBase
+public class DoctorsController : ApiControllerBase
 {
     private readonly IDoctorService _doctorService;
     private readonly PaginationConfiguration _paginationConfiguration;

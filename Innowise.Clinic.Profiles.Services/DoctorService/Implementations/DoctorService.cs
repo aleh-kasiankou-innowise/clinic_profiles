@@ -3,7 +3,6 @@ using Innowise.Clinic.Profiles.Dto.Profile.Doctor;
 using Innowise.Clinic.Profiles.Dto.RabbitMq;
 using Innowise.Clinic.Profiles.Exceptions;
 using Innowise.Clinic.Profiles.Persistence.Models;
-using Innowise.Clinic.Profiles.Persistence.Models.Interfaces;
 using Innowise.Clinic.Profiles.Persistence.Repositories.Interfaces;
 using Innowise.Clinic.Profiles.Services.BlobService.Interfaces;
 using Innowise.Clinic.Profiles.Services.DoctorService.Interfaces;
@@ -15,6 +14,7 @@ using Innowise.Clinic.Shared.MassTransit.MessageTypes.Events;
 using Innowise.Clinic.Shared.Services.FiltrationService;
 using Innowise.Clinic.Shared.Services.FiltrationService.Abstractions;
 using MassTransit;
+using Newtonsoft.Json;
 
 namespace Innowise.Clinic.Profiles.Services.DoctorService.Implementations;
 
@@ -42,7 +42,7 @@ public class DoctorService : IDoctorService
         var newDoctor = newProfile.CreateNewDoctorEntity(photoUrl);
         await _doctorRepository.CreateProfileAsync(newDoctor);
         _rabbitMqPublisher.SendAccountGenerationTask(new(newDoctor.Person.PersonId, UserRoles.Doctor, newDoctor.Email));
-        await _bus.Publish<DoctorAddedOrUpdatedMessage>(new(newDoctor.DoctorId, newDoctor.SpecializationId,
+        await _bus.Publish<DoctorAddedOrUpdatedMessage>(new(newDoctor.Person.PersonId, newDoctor.SpecializationId,
             newDoctor.OfficeId));
         return newDoctor.Person.PersonId;
     }
@@ -85,8 +85,12 @@ public class DoctorService : IDoctorService
         doctor.UpdateProfile(updatedProfile, photoUrl);
         await UpdateStatusAsyncWithoutSaving(doctor, updatedProfile.StatusId);
         await _doctorRepository.UpdateProfileAsync(doctor);
-        await _bus.Publish<DoctorAddedOrUpdatedMessage>(new(doctor.DoctorId, doctor.SpecializationId,
+        await _bus.Publish<DoctorAddedOrUpdatedMessage>(new(doctor.Person.PersonId, doctor.SpecializationId,
             doctor.OfficeId));
+        Console.WriteLine("Message with doctor update sent!!!");
+        Console.WriteLine(JsonConvert.SerializeObject(new DoctorAddedOrUpdatedMessage(doctor.Person.PersonId,
+            doctor.SpecializationId,
+            doctor.OfficeId)));
     }
 
     public async Task UpdateStatusAsync(Guid doctorId, Guid newStatusId)

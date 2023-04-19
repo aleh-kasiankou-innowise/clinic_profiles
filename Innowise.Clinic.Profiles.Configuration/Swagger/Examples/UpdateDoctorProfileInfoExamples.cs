@@ -3,11 +3,11 @@ using Swashbuckle.AspNetCore.Filters;
 
 namespace Innowise.Clinic.Profiles.Configuration.Swagger.Examples;
 
-public class UpdateDoctorProfileInfoExamples : IMultipleExamplesProvider<DoctorProfileStatusDto>
+public class UpdateDoctorProfileInfoExamples : IMultipleExamplesProvider<PolymorphicDoctorProfileBase>
 {
-    public IEnumerable<SwaggerExample<DoctorProfileStatusDto>> GetExamples()
+    public IEnumerable<SwaggerExample<PolymorphicDoctorProfileBase>> GetExamples()
     {
-        DoctorProfileStatusDto patientProfileWithNumberAndPhotoDto = new DoctorProfileUpdateDto(
+        PolymorphicDoctorProfileBase patientProfileWithNumberAndPhotoDto = new DoctorProfileUpdateDto(
             null,
             "James", "Sullivan", "Jose",
             new DateTime(1990, 2, 15),
@@ -17,7 +17,7 @@ public class UpdateDoctorProfileInfoExamples : IMultipleExamplesProvider<DoctorP
         yield return SwaggerExample.Create("Update Doctor Profile",
             patientProfileWithNumberAndPhotoDto);
 
-        var patientProfileRecordExample =
+        PolymorphicDoctorProfileBase patientProfileRecordExample =
             new DoctorProfileStatusDto(Guid.Parse("e8dfe97a-1c89-45ff-b08c-a97f6edc5e41"));
         yield return SwaggerExample.Create("Update Doctor Status", patientProfileRecordExample
         );

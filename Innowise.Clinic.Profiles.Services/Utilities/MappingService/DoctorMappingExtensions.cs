@@ -55,7 +55,7 @@ public static class DoctorMappingExtensions
     public static DoctorPublicInfoDto ToPublicProfileDto(this Doctor doctor)
     {
         return new DoctorPublicInfoDto(
-            doctor.DoctorId,
+            doctor.Person.PersonId,
             doctor.Person.FirstName,
             doctor.Person.LastName,
             doctor.Person.MiddleName,

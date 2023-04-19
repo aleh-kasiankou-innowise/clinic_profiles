@@ -1,3 +1,4 @@
+using Innowise.Clinic.Profiles.API.ModelBinders;
 using Innowise.Clinic.Profiles.Configuration.Swagger.Examples;
 using Innowise.Clinic.Profiles.Dto.Profile.Doctor;
 using Innowise.Clinic.Profiles.Exceptions;
@@ -30,7 +31,6 @@ public class DoctorProfilesController : ApiControllerBase
 
     [HttpPost]
     [Authorize(Roles = $"{UserRoles.Receptionist}")]
-
     public async Task<ActionResult<Guid>> CreateProfile([FromForm] DoctorProfileDto newDoctor)
     {
         return Ok((await _doctorService.CreateProfileAsync(newDoctor)).ToString());
@@ -41,7 +41,8 @@ public class DoctorProfilesController : ApiControllerBase
     [AllowInteractionWithOwnProfileOnlyFilter(UserRoles.Doctor)]
     [SwaggerRequestExample(typeof(DoctorProfileStatusDto), typeof(UpdateDoctorProfileInfoExamples))]
     public async Task<IActionResult> EditProfile([FromRoute] Guid id,
-        [FromForm] DoctorProfileStatusDto updatedDoctor)
+        [FromForm] [ModelBinder(typeof(DoctorUpdateFormModelBinder))]
+        PolymorphicDoctorProfileBase updatedDoctor)
     {
         if (updatedDoctor is DoctorProfileUpdateDto completeUpdateDto)
         {
@@ -49,9 +50,9 @@ public class DoctorProfilesController : ApiControllerBase
             return Ok();
         }
 
-        if (updatedDoctor.GetType() == typeof(DoctorProfileStatusDto))
+        if (updatedDoctor is DoctorProfileStatusDto statusUpdate)
         {
-            await _doctorService.UpdateStatusAsync(id, updatedDoctor.StatusId);
+            await _doctorService.UpdateStatusAsync(id, statusUpdate.StatusId);
             return Ok();
         }
 

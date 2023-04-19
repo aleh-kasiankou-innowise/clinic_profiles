@@ -6,7 +6,6 @@ using Innowise.Clinic.Profiles.Services.BlobService.Interfaces;
 using Innowise.Clinic.Profiles.Services.PatientService.Interfaces;
 using Innowise.Clinic.Profiles.Services.Utilities.MappingService;
 using Innowise.Clinic.Shared.MassTransit.MessageTypes.Events;
-using Innowise.Clinic.Shared.MassTransit.MessageTypes.Requests;
 using Innowise.Clinic.Shared.Services.FiltrationService;
 using Innowise.Clinic.Shared.Services.FiltrationService.Abstractions;
 using MassTransit;
