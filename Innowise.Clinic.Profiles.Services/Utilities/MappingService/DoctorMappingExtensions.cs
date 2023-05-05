@@ -81,6 +81,7 @@ public static class DoctorMappingExtensions
         doctor.DateOfBirth = updatedProfile.DateOfBirth;
         doctor.Person.Photo = photo;
         doctor.SpecializationId = updatedProfile.SpecializationId;
+        doctor.OfficeId = updatedProfile.OfficeId;
         doctor.CareerStartYear = updatedProfile.CareerStartYear;
 
         return doctor;

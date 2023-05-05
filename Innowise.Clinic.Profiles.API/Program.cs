@@ -1,5 +1,6 @@
 using Innowise.Clinic.Profiles.Configuration;
 using Innowise.Clinic.Profiles.RequestPipeline;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -29,4 +30,7 @@ app.UseAuthorization();
 
 app.MapControllers();
 
+Log.Information("The Profiles service is starting");
 app.Run();
+Log.Information("The Profiles service is stopping");
+await Log.CloseAndFlushAsync();

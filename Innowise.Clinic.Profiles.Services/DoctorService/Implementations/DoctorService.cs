@@ -14,7 +14,6 @@ using Innowise.Clinic.Shared.MassTransit.MessageTypes.Events;
 using Innowise.Clinic.Shared.Services.FiltrationService;
 using Innowise.Clinic.Shared.Services.FiltrationService.Abstractions;
 using MassTransit;
-using Newtonsoft.Json;
 
 namespace Innowise.Clinic.Profiles.Services.DoctorService.Implementations;
 
@@ -38,12 +37,14 @@ public class DoctorService : IDoctorService
 
     public async Task<Guid> CreateProfileAsync(DoctorProfileDto newProfile)
     {
-        var photoUrl = await _blobService.UploadPhotoAsync(newProfile.Photo);
-        var newDoctor = newProfile.CreateNewDoctorEntity(photoUrl);
+        var newDoctor = newProfile.CreateNewDoctorEntity(null);
         await _doctorRepository.CreateProfileAsync(newDoctor);
         _rabbitMqPublisher.SendAccountGenerationTask(new(newDoctor.Person.PersonId, UserRoles.Doctor, newDoctor.Email));
         await _bus.Publish<DoctorAddedOrUpdatedMessage>(new(newDoctor.Person.PersonId, newDoctor.SpecializationId,
             newDoctor.OfficeId));
+        var photoUrl = await _blobService.SavePhotoAsync(newDoctor.Person.PersonId, newProfile.Photo);
+        newDoctor.Person.Photo = photoUrl;
+        await _doctorRepository.UpdateProfileAsync(newDoctor);
         return newDoctor.Person.PersonId;
     }
 
@@ -81,16 +82,12 @@ public class DoctorService : IDoctorService
     public async Task UpdateProfileAsync(Guid doctorId, DoctorProfileUpdateDto updatedProfile)
     {
         var doctor = await _doctorRepository.GetProfileAsync(doctorId);
-        var photoUrl = await HandlePhotoUpdate(doctor.Person.Photo, updatedProfile);
+        var photoUrl = await HandlePhotoUpdate(doctorId, doctor.Person.Photo, updatedProfile);
         doctor.UpdateProfile(updatedProfile, photoUrl);
         await UpdateStatusAsyncWithoutSaving(doctor, updatedProfile.StatusId);
         await _doctorRepository.UpdateProfileAsync(doctor);
         await _bus.Publish<DoctorAddedOrUpdatedMessage>(new(doctor.Person.PersonId, doctor.SpecializationId,
             doctor.OfficeId));
-        Console.WriteLine("Message with doctor update sent!!!");
-        Console.WriteLine(JsonConvert.SerializeObject(new DoctorAddedOrUpdatedMessage(doctor.Person.PersonId,
-            doctor.SpecializationId,
-            doctor.OfficeId)));
     }
 
     public async Task UpdateStatusAsync(Guid doctorId, Guid newStatusId)
@@ -115,28 +112,20 @@ public class DoctorService : IDoctorService
         doctor.StatusId = newStatusId;
     }
 
-    private async Task<string?> HandlePhotoUpdate(string? savedPhoto, DoctorProfileUpdateDto updatedProfile)
+    
+    // TODO REMOVE DUPLICATION
+    private async Task<string?> HandlePhotoUpdate(Guid fileId, string? savedPhoto, DoctorProfileUpdateDto updatedProfile)
     {
-        var photoUrl = savedPhoto;
+        if (updatedProfile is { IsToDeletePhoto: false, Photo: not null })
+        {
+            return await _blobService.SavePhotoAsync(fileId, updatedProfile.Photo);
+        }
 
         if (updatedProfile.IsToDeletePhoto && savedPhoto is not null)
         {
             await _blobService.DeletePhotoAsync(savedPhoto);
-            photoUrl = null;
         }
 
-        else if (updatedProfile is { IsToDeletePhoto: false, Photo: not null })
-        {
-            if (savedPhoto is null)
-            {
-                photoUrl = await _blobService.UploadPhotoAsync(updatedProfile.Photo);
-            }
-            else
-            {
-                await _blobService.UpdatePhotoAsync(updatedProfile.Photo, savedPhoto);
-            }
-        }
-
-        return photoUrl;
+        return savedPhoto;
     }
 }

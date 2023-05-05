@@ -37,10 +37,12 @@ public class PatientService : IPatientService
 
     public async Task<Guid> CreateProfileAsync(PatientProfileWithNumberAndPhotoDto newProfile, Guid associatedUserId)
     {
-        var photoUrl = await _blobService.UploadPhotoAsync(newProfile.Photo);
-        var newPatientProfile = newProfile.CreateNewPatientEntity(associatedUserId, photoUrl);
+        var newPatientProfile = newProfile.CreateNewPatientEntity(associatedUserId, null);
         await _patientRepository.CreateProfileAsync(newPatientProfile);
         await _bus.Publish(new PatientCreatedProfileMessage(newPatientProfile.Person.PersonId, associatedUserId));
+        var photoUrl = await _blobService.SavePhotoAsync(newPatientProfile.PersonId, newProfile.Photo);
+        newPatientProfile.Person.Photo = photoUrl;
+        await _patientRepository.UpdateProfileAsync(newPatientProfile);
         return newPatientProfile.Person.PersonId;
     }
 
@@ -61,7 +63,7 @@ public class PatientService : IPatientService
     public async Task UpdateProfileAsync(Guid patientId, PatientProfileWithNumberAndPhotoDto updatedProfile)
     {
         var patient = await _patientRepository.GetPatientProfileAsync(patientId);
-        var photoUrl = await HandlePhotoUpdate(patient.Person.Photo, updatedProfile);
+        var photoUrl = await HandlePhotoUpdate(patientId, patient.Person.Photo, updatedProfile);
         patient.UpdateProfile(updatedProfile, photoUrl);
         await _patientRepository.UpdateProfileAsync(patient);
     }
@@ -76,29 +78,20 @@ public class PatientService : IPatientService
         await _patientRepository.DeleteProfileAsync(patient);
     }
 
-    private async Task<string?> HandlePhotoUpdate(string? savedPhoto,
+    // TODO REMOVE DUPLICATION
+    private async Task<string?> HandlePhotoUpdate(Guid fileId, string? savedPhoto,
         PatientProfileWithNumberAndPhotoDto updatedProfile)
     {
-        var photoUrl = savedPhoto;
+        if (updatedProfile is { IsToDeletePhoto: false, Photo: not null })
+        {
+            return await _blobService.SavePhotoAsync(fileId, updatedProfile.Photo);
+        }
 
         if (updatedProfile.IsToDeletePhoto && savedPhoto is not null)
         {
             await _blobService.DeletePhotoAsync(savedPhoto);
-            photoUrl = null;
         }
 
-        else if (updatedProfile is { IsToDeletePhoto: false, Photo: not null })
-        {
-            if (savedPhoto is null)
-            {
-                photoUrl = await _blobService.UploadPhotoAsync(updatedProfile.Photo);
-            }
-            else
-            {
-                await _blobService.UpdatePhotoAsync(updatedProfile.Photo, savedPhoto);
-            }
-        }
-
-        return photoUrl;
+        return savedPhoto;
     }
 }

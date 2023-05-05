@@ -31,6 +31,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Serilog;
+using Serilog.Sinks.Elasticsearch;
 using Swashbuckle.AspNetCore.Filters;
 
 namespace Innowise.Clinic.Profiles.Configuration;
@@ -77,10 +79,12 @@ public static class ConfigurationExtensions
 
         services.AddMassTransit(x =>
         {
-            x.AddConsumer<ConsistencyCheckRequestConsumer>();
+            x.AddConsumer<ProfileExistsAndHasRoleRequestConsumer>();
             x.AddConsumer<OfficeUpdatedConsumer>();
             x.AddConsumer<SpecializationUpdatedConsumer>();
             x.AddConsumer<AccountLinkingRequestConsumer>();
+            x.AddConsumer<DoctorNameRequestConsumer>();
+            x.AddConsumer<PatientNameRequestConsumer>();
 
             x.UsingRabbitMq((context, cfg) =>
             {
@@ -164,5 +168,26 @@ public static class ConfigurationExtensions
                 await context.Database.MigrateAsync();
             }
         }
+    }
+    
+    public static WebApplicationBuilder ConfigureSerilog(this WebApplicationBuilder builder)
+    {
+        var logger = new LoggerConfiguration()
+            .ReadFrom.Configuration(builder.Configuration)
+            .Enrich.FromLogContext()
+            .WriteTo.Elasticsearch(new ElasticsearchSinkOptions(new Uri(builder.Configuration["ElasticSearchHost"]))
+            {
+                AutoRegisterTemplate = true,
+                OverwriteTemplate = true,
+                IndexFormat = $"clinic.profiles-{0:yy.MM}",
+                BatchAction = ElasticOpType.Index,
+                DetectElasticsearchVersion = true,
+            })
+            .WriteTo.Console()
+            .CreateLogger();
+
+        Log.Logger = logger;
+        builder.Host.UseSerilog(logger);
+        return builder;
     }
 }

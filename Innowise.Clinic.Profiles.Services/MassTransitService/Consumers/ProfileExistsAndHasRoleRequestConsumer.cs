@@ -5,23 +5,24 @@ using Innowise.Clinic.Shared.Constants;
 using Innowise.Clinic.Shared.MassTransit.MessageTypes.Requests;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace Innowise.Clinic.Profiles.Services.MassTransitService.Consumers;
 
-public class ConsistencyCheckRequestConsumer : IConsumer<ProfileExistsAndHasRoleRequest>
+public class ProfileExistsAndHasRoleRequestConsumer : IConsumer<ProfileExistsAndHasRoleRequest>
 {
     private readonly ProfilesDbContext _dbContext;
+    private readonly ILogger<ProfileExistsAndHasRoleRequestConsumer> _logger;
 
-    public ConsistencyCheckRequestConsumer(ProfilesDbContext dbContext)
+    public ProfileExistsAndHasRoleRequestConsumer(ProfilesDbContext dbContext, ILogger<ProfileExistsAndHasRoleRequestConsumer> logger)
     {
         _dbContext = dbContext;
+        _logger = logger;
     }
 
     public async Task Consume(ConsumeContext<ProfileExistsAndHasRoleRequest> context)
     {
-        var profile = await _dbContext.Patients.FindAsync(context.Message.ProfileId.ToString());
-
-        if (profile is not null)
+        try
         {
             IQueryable<IPersonRelatable> dbContext;
 
@@ -40,24 +41,28 @@ public class ConsistencyCheckRequestConsumer : IConsumer<ProfileExistsAndHasRole
                     throw new InvalidInputDataException($"The unknown role : {context.Message.Role}");
             }
 
-            if (await dbContext.AnyAsync(x => x.PersonId == context.Message.ProfileId))
+            if (!await dbContext.AnyAsync(x => x.PersonId == context.Message.ProfileId))
             {
-                await context.RespondAsync(
-                    new ProfileExistsAndHasRoleResponse(false,
-                        $"The profile exists but doesn't belong to a {context.Message.Role.ToLower()} group."));
+                var response = new ProfileExistsAndHasRoleResponse(false,
+                    $"The profile doesn't belong to a {context.Message.Role.ToLower()} group.");
+                await context.RespondAsync(response);
+                _logger.LogInformation("Person with profile id {Id} doesn't belong to a {Group} group",
+                    context.Message.ProfileId, context.Message.Role);
             }
 
             else
             {
-                await context.RespondAsync(
-                    new ServiceExistsAndBelongsToSpecializationResponse(true, null));
+                var response = new ProfileExistsAndHasRoleResponse(true, null);
+                await context.RespondAsync(response);
+                _logger.LogInformation("Person with profile id {Id} exists and belongs to a {Group} group",
+                    context.Message.ProfileId, context.Message.Role);
             }
         }
 
-        else
+        finally
         {
-            await context.RespondAsync(
-                new ServiceExistsAndBelongsToSpecializationResponse(false, "The requested profile does not exist."));
+            _logger.LogInformation("Consistency check for doctor with id {DoctorId} is finished",
+                context.Message.ProfileId);
         }
     }
 }

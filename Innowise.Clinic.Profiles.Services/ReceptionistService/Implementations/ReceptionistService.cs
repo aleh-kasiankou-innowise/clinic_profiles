@@ -27,13 +27,15 @@ public class ReceptionistService : IReceptionistService
 
     public async Task<Guid> CreateProfileAsync(CreateReceptionistProfileDto newProfile)
     {
-        var photoUrl = await _blobService.UploadPhotoAsync(newProfile.Photo);
-        var newReceptionist = newProfile.CreateNewProfile(photoUrl);
+        var newReceptionist = newProfile.CreateNewProfile(null);
         await _receptionistRepository.CreateProfileAsync(newReceptionist);
         var userCreationRequest =
             new AccountGenerationDto(newReceptionist.Person.PersonId, UserRoles.Receptionist, newReceptionist.Email);
 
         _authenticationServiceConnection.SendAccountGenerationTask(userCreationRequest);
+        var photoUrl = await _blobService.SavePhotoAsync(newReceptionist.PersonId, newProfile.Photo);
+        newReceptionist.Person.Photo = photoUrl;
+        await _receptionistRepository.UpdateProfileAsync(newReceptionist);
         return newReceptionist.Person.PersonId;
     }
 
@@ -52,7 +54,7 @@ public class ReceptionistService : IReceptionistService
     public async Task UpdateProfileAsync(Guid receptionistId, EditReceptionistProfileDto updatedProfile)
     {
         var receptionist = await _receptionistRepository.GetProfileAsync(receptionistId);
-        var photoUrl = await HandlePhotoUpdate(receptionist.Person.Photo, updatedProfile);
+        var photoUrl = await HandlePhotoUpdate(receptionistId, receptionist.Person.Photo, updatedProfile);
         receptionist.OfficeId = updatedProfile.OfficeId;
         receptionist.Person.FirstName = updatedProfile.FirstName;
         receptionist.Person.LastName = updatedProfile.LastName;
@@ -73,29 +75,21 @@ public class ReceptionistService : IReceptionistService
             throw new InconsistentDataException("The receptionist is not linked to the account.");
         }
     }
-    
-    private async Task<string?> HandlePhotoUpdate(string? savedPhoto, EditReceptionistProfileDto updatedProfile)
+
+    // TODO REMOVE DUPLICATION
+    private async Task<string?> HandlePhotoUpdate(Guid fileId, string? savedPhoto,
+        EditReceptionistProfileDto updatedProfile)
     {
-        var photoUrl = savedPhoto;
+        if (updatedProfile is { IsToDeletePhoto: false, Photo: not null })
+        {
+            return await _blobService.SavePhotoAsync(fileId, updatedProfile.Photo);
+        }
 
         if (updatedProfile.IsToDeletePhoto && savedPhoto is not null)
         {
             await _blobService.DeletePhotoAsync(savedPhoto);
-            photoUrl = null;
         }
 
-        else if (updatedProfile is { IsToDeletePhoto: false, Photo: not null })
-        {
-            if (savedPhoto is null)
-            {
-                photoUrl = await _blobService.UploadPhotoAsync(updatedProfile.Photo);
-            }
-            else
-            {
-                await _blobService.UpdatePhotoAsync(updatedProfile.Photo, savedPhoto);
-            }
-        }
-
-        return photoUrl;
+        return savedPhoto;
     }
 }

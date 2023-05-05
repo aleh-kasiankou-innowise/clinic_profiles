@@ -8,20 +8,18 @@ namespace Innowise.Clinic.Profiles.Services.BlobService.Implementations;
 
 public class BlobService : IBlobService
 {
-    private readonly IRequestClient<BlobUploadRequest> _uploadClient;
-    private readonly IRequestClient<BlobUpdateRequest> _updateClient;
+    private readonly IRequestClient<BlobSaveRequest> _saveClient;
+
     private readonly IRequestClient<BlobDeletionRequest> _deleteClient;
 
 
-    public BlobService(IRequestClient<BlobUploadRequest> uploadClient, IRequestClient<BlobUpdateRequest> updateClient,
-        IRequestClient<BlobDeletionRequest> deleteClient)
+    public BlobService(IRequestClient<BlobDeletionRequest> deleteClient, IRequestClient<BlobSaveRequest> saveClient)
     {
-        _uploadClient = uploadClient;
-        _updateClient = updateClient;
         _deleteClient = deleteClient;
+        _saveClient = saveClient;
     }
 
-    public async Task<string?> UploadPhotoAsync(IFormFile? file)
+    public async Task<string?> SavePhotoAsync(Guid fileId, IFormFile? file)
     {
         if (file is null)
         {
@@ -29,25 +27,14 @@ public class BlobService : IBlobService
         }
 
         var fileContent = await ConvertFileToBytes(file);
-        var uploadRequest = new BlobUploadRequest(fileContent, file.ContentType, BlobCategories.ProfilePhoto);
-        var response = await _uploadClient.GetResponse<BlobUploadResponse>(uploadRequest);
+        var uploadRequest = new BlobSaveRequest(fileId, BlobCategories.ProfilePhoto, fileContent, file.ContentType);
+        var response = await _saveClient.GetResponse<BlobSaveResponse>(uploadRequest);
         if (!response.Message.IsSuccessful)
         {
             throw new ApplicationException("The photo cannot be uploaded. The profile creation/update is cancelled.");
         }
 
         return response.Message.FileUrl;
-    }
-
-    public async Task UpdatePhotoAsync(IFormFile file, string savedFileUrl)
-    {
-        var fileContent = await ConvertFileToBytes(file);
-        var updateRequest = new BlobUpdateRequest(fileContent, file.ContentType, savedFileUrl);
-        var response = await _updateClient.GetResponse<BlobUpdateResponse>(updateRequest);
-        if (!response.Message.IsSuccessful)
-        {
-            throw new ApplicationException("The photo cannot be updated. The profile update is cancelled.");
-        }
     }
 
     public async Task DeletePhotoAsync(string photoUrl)
